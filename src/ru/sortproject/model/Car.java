@@ -17,4 +17,15 @@ public class Car {
         public Car build() { return car; }
     }
 
+    public int getPower() {
+        return power;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getYear() {
+        return year;
+    }
 }
