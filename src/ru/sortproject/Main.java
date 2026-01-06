@@ -2,13 +2,15 @@ package ru.sortproject;
 
 import ru.sortproject.model.Car;
 import ru.sortproject.strategy.SortStrategy;
+import ru.sortproject.util.CarComparator;
 
+import java.io.FileReader;
 import java.util.Scanner;
 
 public class Main {
     private static final Scanner in = new Scanner(System.in);
     private static Car[] cars = new Car[0];
-    private static SortStrategy currentStrategy;
+    private static CarComparator currentStrategy;
 
     public static void main(String[] args) {
         System.out.println("=========================================");
@@ -90,21 +92,30 @@ public class Main {
         System.out.println("\n=== ВЫБОР СПОСОБА ВВОДА ===");
         System.out.println("1. Ручной ввод");
         System.out.println("2. Случайная генерация");
-        System.out.println("3. Отмена");
+        System.out.println("4. Отмена");
         System.out.print("Выберите опцию (1-3): ");
 
-        int choice = getMenuChoice(1, 3);
+        int choice = getMenuChoice(1, 4);
 
-        /*switch (choice) {
+        switch (choice) {
             case 1:
-                int size = DataInputService.inputArraySize();
-                return DataInputService.inputDataManually(size);
+                int size = DataLoader.inputArraySize();
+                return DataLoader.loadManual(size);
             case 2:
-                int randomSize = DataInputService.inputArraySize();
-                return DataInputService.generateRandomData(randomSize);
+                int randomSize = DataLoader.inputArraySize();
+                return DataLoader.loadRandom(randomSize);
+            case 3:
+                String fileName = DataLoader.getStringInput("ВВедите имя файла");
+                cars = FileReader.readCarFromFile(fileName);
+                if (cars.length == 0){
+                    System.out.println("Не удалось найти файл!");
+                    continue;
+                }
+                System.out.println("Загружено" + cars.length + " записей");
+                break;
             default:
                 return cars; // Возвращаем текущие данные
-        }*/
+        }
     }
 
     private static void displayCars(Car[] cars) {
@@ -132,13 +143,12 @@ public class Main {
         }
 
         System.out.println("\n=== ВЫБОР СТРАТЕГИИ СОРТИРОВКИ ===");
-        System.out.println("1. Сортировка по мощности (Пузырьковая)");
-        System.out.println("2. Сортировка по модели (Выбором)");
-        System.out.println("3. Сортировка по году (Вставками)");
-        System.out.println("4. Отмена");
-        System.out.print("Выберите опцию (1-4): ");
+        System.out.println("1. Сортировка Пузырьковая");
+        System.out.println("2. Сортировка многоуровневая");
+        System.out.println("3. Отмена");
+        System.out.print("Выберите опцию (1-3): ");
 
-        int choice = getMenuChoice(1, 4);
+        int choice = getMenuChoice(1, 3);
 
         // Создаем копию массива для сортировки
         Car[] carsToSort = new Car[cars.length];
@@ -146,24 +156,18 @@ public class Main {
             carsToSort[i] = cars[i];
         }
 
-        /*switch (choice) {
+        switch (choice) {
             case 1:
-                currentStrategy = new SortStrategy();
-                currentStrategy.sort(carsToSort);
+                currentStrategy = new BubbleSortStrategy();
                 break;
             case 2:
-                currentStrategy = new SortStrategy();
-                currentStrategy.sort(carsToSort);
-                break;
-            case 3:
-                currentStrategy = new SortStrategy();
-                currentStrategy.sort(carsToSort);
+                currentStrategy = new CarComparator();
                 break;
             default:
                 return;
-        }*/
+        }
 
-        //System.out.println("\n" + currentStrategy.getSortStrategy());
+        System.out.println("\n");
         displayCars(carsToSort);
 
         System.out.print("\nХотите заменить текущие данные отсортированными? (да/нет): ");
@@ -187,13 +191,13 @@ public class Main {
         Car[] byModel = copyArray(cars);
         Car[] byYear = copyArray(cars);
 
-        // Выполняем все три сортировки
-       /* SortStrategy powerStrategy = new PowerSortingStrategy();
+        //Выполняем все три сортировки
+        SortStrategy powerStrategy = new PowerSortingStrategy();
         SortStrategy modelStrategy = new ModelSortingStrategy();
         SortStrategy yearStrategy = new YearSortingStrategy();*/
 
         System.out.println("\n1. Сортировка по мощности:");
-        //powerStrategy.sort(byPower);
+        powerStrategy.sort(byPower);
         displayCars(byPower);
 
         System.out.println("\n2. Сортировка по модели:");
