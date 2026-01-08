@@ -1,19 +1,23 @@
 package ru.sortproject.strategy;
 
+import ru.sortproject.structure.CustomList;
+import ru.sortproject.structure.MyArrayList;
+
 import java.util.Comparator;
 
 public class SorterContext<T> {
+
     private SortStrategy<T> strategy;
 
     public void setStrategy(SortStrategy<T> strategy) {
         this.strategy = strategy;
     }
 
-    public void executeSort(T[] array, Comparator<T> comparator) {
+    public void executeSort(CustomList<T> list, Comparator<T> comparator) {
         if (strategy == null) {
             System.out.println("Стратегия не выбрана!");
             return;
         }
-        strategy.sort(array, comparator);
+        strategy.sort(list, comparator);
     }
 }
