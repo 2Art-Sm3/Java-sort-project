@@ -9,6 +9,7 @@ public class MyArrayList<T> implements CustomList<T> {
     private int size = 0;
     private static final int DEFAULT_CAPACITY = 10;
 
+    @SuppressWarnings("unchecked")
     public MyArrayList(int capacity) {
         if (capacity <= 0)
             throw new IllegalArgumentException("Capacity <= 0");
@@ -48,6 +49,7 @@ public class MyArrayList<T> implements CustomList<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T[] toArray(Class<T> clazz) {
         T[] copy = (T[]) Array.newInstance(clazz, size);
         for (int i = 0; i < size; i++) {
@@ -61,6 +63,7 @@ public class MyArrayList<T> implements CustomList<T> {
         return new ArrayIterator<>(values, size);
     }
 
+    @SuppressWarnings("unchecked")
     private void grow() {
         int newCapacity = (int) (values.length * 1.5 + 1);
         T[] newValues = (T[]) new Object[newCapacity];
