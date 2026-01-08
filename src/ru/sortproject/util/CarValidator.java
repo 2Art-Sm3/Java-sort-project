@@ -1,4 +1,4 @@
-package ru.sortproject.DataLoader;
+package ru.sortproject.util;
 
 public class CarValidator {
     public static boolean validatePower(String powerStr) {

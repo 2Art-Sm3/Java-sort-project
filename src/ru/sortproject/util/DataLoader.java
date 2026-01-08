@@ -1,6 +1,7 @@
-package ru.sortproject.DataLoader;
+package ru.sortproject.util;
 
 import ru.sortproject.model.Car;
+
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
