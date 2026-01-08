@@ -80,4 +80,14 @@ public class MyArrayList<T> implements CustomList<T> {
         }
         return sb.append("]").toString();
     }
+
+    @Override
+    public boolean addAll(CustomList<T> other) {
+        boolean changed = false;
+        for (T element : other) {
+            add(element);
+            changed = true;
+        }
+        return changed;
+    }
 }

@@ -1,16 +1,18 @@
 package ru.sortproject.util;
 
 import ru.sortproject.model.Car;
+import ru.sortproject.structure.CustomList;
+import ru.sortproject.structure.MyArrayList;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataLoader {
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static List<Car> loadFromFile(String filename) {
+    public static CustomList<Car> loadFromFile(String filename) {
+
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             return br.lines()
                     .map(String::trim)
@@ -18,35 +20,44 @@ public class DataLoader {
                     .map(line -> {
                         String[] parts = line.split(",");
                         if (parts.length != 3) return null;
-                        String powerStr = parts[0].trim();
+                        String power = parts[0].trim();
                         String model = parts[1].trim();
-                        String yearStr = parts[2].trim();
+                        String year = parts[2].trim();
 
-                        if (CarValidator.validatePower(powerStr) &&
+                        if (CarValidator.validatePower(power) &&
                                 CarValidator.validateModel(model) &&
-                                CarValidator.validateYear(yearStr)) {
-                            int power = Integer.parseInt(powerStr);
-                            int year = Integer.parseInt(yearStr);
+                                CarValidator.validateYear(year)) {
                             return new Car.Builder()
-                                    .setPower(power)
+                                    .setPower(Integer.parseInt(power))
                                     .setModel(model)
-                                    .setYear(year)
+                                    .setYear(Integer.parseInt(year))
                                     .build();
                         }
                         return null;
                     })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                    .collect(MyArrayListCollector.carCollector());
+
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
-            return Collections.emptyList();
+            return new MyArrayList<>();
         }
     }
 
-    public static List<Car> loadManual() {
-        List<Car> cars = new ArrayList<>();
+    public static CustomList<Car> loadManual() {
+        CustomList<Car> cars = new MyArrayList<>();
         System.out.print("Введите длину массива: ");
-        int length = Integer.parseInt(scanner.nextLine());
+        int length = 0;
+        while (true) {
+            System.out.print("Введите длину массива: ");
+            String input = scanner.nextLine();
+            try {
+                length = Integer.parseInt(input);
+                if (length > 0) break;
+                else System.out.println("Длина должна быть положительным числом");
+            } catch (NumberFormatException e) {
+                System.out.println("Некорректный ввод. Попробуйте еще раз.");
+            }
+        }
 
         IntStream.range(0, length).forEach(i -> {
             System.out.println("Введите данные для автомобиля #" + (i + 1));
@@ -55,6 +66,9 @@ public class DataLoader {
             do {
                 System.out.print("Мощность: ");
                 powerStr = scanner.nextLine();
+                if (!CarValidator.validatePower(powerStr)) {
+                    System.out.println("Некорректное значение мощности. Попробуйте еще раз.");
+                }
             } while (!CarValidator.validatePower(powerStr));
             int power = Integer.parseInt(powerStr);
 
@@ -66,6 +80,9 @@ public class DataLoader {
             do {
                 System.out.print("Год производства: ");
                 yearStr = scanner.nextLine();
+                if (!CarValidator.validateYear(yearStr)) {
+                    System.out.println("Некорректный формат. Попробуйте еще раз.");
+                }
             } while (!CarValidator.validateYear(yearStr));
             int year = Integer.parseInt(yearStr);
 
@@ -78,8 +95,8 @@ public class DataLoader {
         return cars;
     }
 
-    public static List<Car> loadRandom(int count) {
-        List<Car> cars = new ArrayList<>();
+    public static CustomList<Car> loadRandom(int count) {
+        CustomList<Car> cars = new MyArrayList<>();
         Random rand = new Random();
         for (int i=0; i<count; i++) {
             int power = rand.nextInt(1000);
