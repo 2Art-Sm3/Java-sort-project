@@ -1,7 +1,6 @@
 package ru.sortproject.strategy;
 
 import ru.sortproject.structure.CustomList;
-import ru.sortproject.structure.MyArrayList;
 
 import java.util.Comparator;
 

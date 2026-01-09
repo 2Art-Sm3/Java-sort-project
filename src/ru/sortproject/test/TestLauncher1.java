@@ -1,5 +1,7 @@
 package ru.sortproject.test;
 
+import ru.sortproject.model.Car;
+import ru.sortproject.strategy.EvenOddSortStrategy;
 import ru.sortproject.structure.MyArrayList;
 
 public class TestLauncher1 {
@@ -29,5 +31,19 @@ public class TestLauncher1 {
         if (it.hasNext() && it.next().equals("Первый")) {
             System.out.println("Ручная проверка: OK");
         }
+
+        MyArrayList<Car> cars = new MyArrayList<>();
+        cars.add(new Car.Builder().setPower(150).setModel("A").build()); // Четное
+        cars.add(null);                                                  // Null
+        cars.add(new Car.Builder().setPower(101).setModel("B").build()); // Нечетное
+        cars.add(new Car.Builder().setPower(50).setModel("C").build());  // Четное
+
+        System.out.println(cars);
+
+        EvenOddSortStrategy strategy = new EvenOddSortStrategy();
+        strategy.sort(cars, null);
+
+        System.out.println(cars);
+
     }
 }
