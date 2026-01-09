@@ -1,59 +1,75 @@
 package ru.sortproject;
 
 import ru.sortproject.model.Car;
-import  ru.sortproject.strategy.SortStrategy;
+import ru.sortproject.strategy.*;
+import ru.sortproject.structure.CustomList;
+import ru.sortproject.structure.MyArrayList;
+import ru.sortproject.util.CarComparator;
+import ru.sortproject.util.DataLoader;
 
 
 import java.util.Scanner;
+import static ru.sortproject.util.DataLoader.loadManual;
+import static ru.sortproject.util.DataLoader.loadRandom;
 
 public class Main {
     private static final Scanner in = new Scanner(System.in);
-    public static Car[] cars = new Car[0];
-    private static SorterContext<Car> sorterContext = new SorterContext<>();
+    private static CustomList<Car> cars = new MyArrayList<>();
+    private static final SorterContext<Car> sorterContext = new SorterContext<Car>();
 
     public static void main(String[] args) {
         while (true) {
-            System.out.println("=========================================");
-            System.out.println("\n=== ГЛАВНОЕ МЕНЮ ===");
+            System.out.println("\n ГЛАВНОЕ МЕНЮ ");
             System.out.println("1. Загрузить данные");
             System.out.println("2. Показать данные");
             System.out.println("3. Сортировать данные");
-            System.out.println("4. Параллельная сортировка");
-            System.out.println("5. Сохранить в файл");
-            System.out.println("6. Информация о реализованных алгоритмах");
-            System.out.println("7. Выход");
-            System.out.print("Выберите опцию (1-7): ");
+            System.out.println("4. Информация о реализованных алгоритмах");
+            System.out.println("5. Очистить данные");
+            System.out.println("6. Выход");
+            System.out.print("Выберите опцию (1-6): ");
 
-            int choice = getMenuChoice(1, 7);
+            int choice = getMenuChoice(1, 6);
 
             switch (choice) {
                 case 1:
                     loadData();
                     break;
                 case 2:
-                    displayCars(cars);
+                    displayCars();
                     break;
                 case 3:
                     sortData();
                     break;
                 case 4:
-                    parallelSort();
-                    break;
-                case 5:
-                    saveToFile();
-                    break;
-                case 6:
                     displaySortingAlgorithmsInfo();
                     break;
-                case 7:
+                case 5:
+                    clearData();
+                    break;
+                case 6:
                     System.out.println("Выход из программы.");
                     return;
             }
         }
     }
 
+    private static void clearData() {
+        if (cars.size() > 0) {
+            System.out.print("Вы уверены, что хотите очистить все данные? (да/нет): ");
+            String answer = in.nextLine().trim().toLowerCase();
+            if (answer.equals("да") || answer.equals("yes")) {
+                cars = new MyArrayList<>();
+                System.out.println("Данные очищены.");
+            } else {
+                System.out.println("Очистка отменена.");
+            }
+        } else {
+            System.out.println("Очистка отменена.");
+        }
+    }
+
     private static void loadData() {
-        System.out.println("\n=== ВЫБОР СПОСОБА ВВОДА ===");
+        System.out.println("\nВЫБОР СПОСОБА ВВОДА");
         System.out.println("1. Ручной ввод");
         System.out.println("2. Случайная генерация");
         System.out.println("3. Загрузить из файла");
@@ -64,26 +80,71 @@ public class Main {
 
         switch (choice) {
             case 1:
-                int size = inputArraySize();
-                cars = inputDataManually(size);
+                loadManual();
                 break;
             case 2:
-                int randomSize = inputArraySize();
-                cars = generateRandomData(randomSize);
+                loadRandom();
                 break;
             case 3:
-                System.out.print("Введите имя файла: ");
-                String fileName = in.nextLine();
-                Car[] loadedCars = readFromFile(fileName);
-                if (loadedCars.length == 0) {
-                    System.out.println("Не удалось загрузить данные из файла!");
-                } else {
-                    cars = loadedCars;
-                    System.out.println("Загружено " + cars.length + " записей");
-                }
+                loadFromFile();
                 break;
             case 4:
                 return;
+        }
+    }
+
+    private static void loadManual(){
+        CustomList<Car> loadedCars = DataLoader.loadManual();
+        if (loadedCars.size() > 0) {
+            if (cars.size() > 0) {
+                System.out.print("\nДобавить к существующим данным? (да/нет): ");
+                String answer = in.nextLine().trim().toLowerCase();
+                if (answer.equals("да") || answer.equals("yes") || answer.equals("y") || answer.equals("д")) {
+                    cars.addAll(loadedCars);
+                    System.out.println("Добавлено " + loadedCars.size() + " автомобилей.");
+                    System.out.println("Всего автомобилей: " + cars.size());
+                } else {
+                    cars = loadedCars;
+                    System.out.println("Загружено " + cars.size() + " автомобилей.");
+                }
+            } else {
+                cars = loadedCars;
+                System.out.println("Загружено " + cars.size() + " автомобилей.");
+            }
+        } else {
+            System.out.println("Не было добавлено ни одного автомобиля.");
+        }
+    }
+
+    private static void loadFromFile() {
+        System.out.print("Введите имя файла (по умолчанию: cars.txt): ");
+        String filename = in.nextLine().trim();
+        if (filename.isEmpty()) {
+            filename = "cars.txt";
+        }
+    }
+
+    private static void loadRandom() {
+        System.out.print("Сколько автомобилей сгенерировать? (1-1000): ");
+        int count = getMenuChoice(1, 1000);
+
+        CustomList<Car> loadedCars = DataLoader.loadRandom(count);
+        if (loadedCars.size() > 0) {
+            if (cars.size() > 0) {
+                System.out.print("\nДобавить к существующим данным? (да/нет): ");
+                String answer = in.nextLine().trim().toLowerCase();
+                if (answer.equals("да") || answer.equals("yes") || answer.equals("y") || answer.equals("д")) {
+                    cars.addAll(loadedCars);
+                    System.out.println("Добавлено " + loadedCars.size() + " автомобилей.");
+                    System.out.println("Всего автомобилей: " + cars.size());
+                } else {
+                    cars = loadedCars;
+                    System.out.println("Сгенерировано " + cars.size() + " автомобилей.");
+                }
+            } else {
+                cars = loadedCars;
+                System.out.println("Сгенерировано " + cars.size() + " автомобилей.");
+            }
         }
     }
 
@@ -101,150 +162,89 @@ public class Main {
         }
     }
 
-    private static int inputArraySize() {
-        System.out.print("Введите количество автомобилей: ");
-        while (true) {
-            try {
-                int size = Integer.parseInt(in.nextLine());
-                if (size > 0) {
-                    return size;
-                }
-                System.out.print("Количество должно быть больше 0: ");
-            } catch (NumberFormatException e) {
-                System.out.print("Введите корректное число: ");
-            }
-        }
-    }
-
-    private static Car[] inputDataManually(int size) {
-        Car[] result = new Car[size];
-        for (int i = 0; i < size; i++) {
-            System.out.println("\n=== Ввод данных автомобиля " + (i + 1) + " ===");
-
-            System.out.print("Модель: ");
-            String model = in.nextLine();
-
-            System.out.print("Мощность (л.с.): ");
-            int power = Integer.parseInt(in.nextLine());
-
-            System.out.print("Год выпуска: ");
-            int year = Integer.parseInt(in.nextLine());
-
-            result[i] = new Car(model, power, year);
-        }
-        return result;
-    }
-
-    private static Car[] generateRandomData(int size) {
-        Car[] result = new Car[size];
-        String[] models = {"Toyota", "Honda", "Ford", "BMW", "Mercedes", "Audi", "Volkswagen", "Tesla"};
-
-        for (int i = 0; i < size; i++) {
-            String model = models[(int)(Math.random() * models.length)];
-            int power = 50 + (int)(Math.random() * 4951); // 50-5000 л.с.
-            int year = 1990 + (int)(Math.random() * 35); // 1990-2024
-
-            result[i] = new Car(model, power, year);
-        }
-        return result;
-    }
-
-    private static Car[] readFromFile(String filename) {
-        // Здесь должна быть реализация чтения из файла
-        // Возвращаем пустой массив в качестве заглушки
-        return new Car[0];
-    }
-
-    private static void displayCars(Car[] carsToDisplay) {
-        if (carsToDisplay == null || carsToDisplay.length == 0) {
+    private static void displayCars() {
+        if (cars.size() == 0) {
             System.out.println("Нет данных для отображения.");
             return;
         }
 
-        System.out.println("\n=== СПИСОК АВТОМОБИЛЕЙ ===");
-        for (int i = 0; i < carsToDisplay.length; i++) {
-            System.out.println((i + 1) + ". " + carsToDisplay[i]);
+        System.out.println("\n СПИСОК АВТОМОБИЛЕЙ");
+        for (int i = 0; i < cars.size(); i++) {
+            Car car = cars.get(i);
+            System.out.println((i + 1) + ", " + car.getPower() + ", " + car.getModel() + ", " + car.getYear() + " г.");
         }
-        System.out.println("==========================");
+        System.out.println("\n");
     }
 
+
+
     private static void sortData() {
-        if (cars == null || cars.length == 0) {
+        if (cars.size() == 0) {
             System.out.println("Нет данных для сортировки.");
             return;
         }
 
-        System.out.println("\n=== ВЫБОР СТРАТЕГИИ СОРТИРОВКИ ===");
-        System.out.println("1. Сортировка по мощности Пузырьковая");
-        System.out.println("2. Отмена");
-        System.out.print("Выберите опцию (1-2): ");
+        System.out.println("\nВЫБОР СТРАТЕГИИ СОРТИРОВКИ");
+        System.out.println("1. Сортировка Пузырьковая");
+        System.out.println("2. Сортировка Вставкой");
+        System.out.println("3. Сортировка Выборкой");
+        System.out.println("4. Отмена");
+        System.out.print("Выберите опцию (1-4): ");
 
-        int choice = getMenuChoice(1, 2);
+        int choice = getMenuChoice(1, 4);
 
         // Создаем копию массива для сортировки
-        Car[] carsToSort = copyArray(cars);
+        CustomList<Car> carsCopy = copyList(cars);
+        BubbleSortStrategy<Car> bubbleSort = new BubbleSortStrategy<>();
+        SelectionSortStrategy<Car> selectionSort = new SelectionSortStrategy<>();
+        InsertionSortStrategy<Car> insertionSort = new InsertionSortStrategy<>();
 
         switch (choice) {
             case 1:
-                sorterContext.setStrategy(new BubbleSortStrategy<>());
+                bubbleSort.sort(carsCopy, new CarComparator());
                 break;
-            case 2:
+            case  2:
+                selectionSort.sort(carsCopy, new CarComparator());
+                break;
+            case 3:
+                insertionSort.sort(carsCopy, new CarComparator());
+
+            case 4:
                 return;
         }
         System.out.println("\nРезультат сортировки:");
-        displayCars(carsToSort);
+        displayCars();
 
         System.out.print("\nХотите заменить текущие данные отсортированными? (да/нет): ");
         String answer = in.nextLine().trim().toLowerCase();
         if (answer.equals("да") || answer.equals("yes")) {
-            cars = carsToSort;
+            cars = carsCopy;
             System.out.println("Данные обновлены.");
         }
     }
 
-    private static void parallelSort() {
-        if (cars == null || cars.length == 0) {
-            System.out.println("Нет данных для сортировки.");
-            return;
+    private static CustomList<Car> copyList(CustomList<Car> cars) {
+        if (cars == null) {
+            return new MyArrayList<>();
         }
+        CustomList<Car> copy = new MyArrayList<>();
+        for (int i = 0; i < cars.size(); i++) {
+            Car originalCar = cars.get(i);
+            // Создаем глубокую копию через Builder
+            Car copiedCar = new Car.Builder()
+                    .setModel(originalCar.getModel())
+                    .setPower(originalCar.getPower())
+                    .setYear(originalCar.getYear())
+                    .build();
 
-        // Создаем копии для параллельной сортировки
-        Car[] byPower = copyArray(cars);
-        Car[] byModel = copyArray(cars);
-        Car[] byYear = copyArray(cars);
-
-        // Выполняем сортировку
-        System.out.println("\n1. Сортировка:");
-        new BubbleSortStrategy().sort(byPower);
-        displayCars(byPower);
-    }
-
-    private static Car[] copyArray(Car[] original) {
-        Car[] copy = new Car[original.length];
-        for (int i = 0; i < original.length; i++) {
-            copy[i] = original[i];
+            copy.add(copiedCar);
         }
         return copy;
     }
 
-    private static void saveToFile() {
-        if (cars == null || cars.length == 0) {
-            System.out.println("\nНет данных для сохранения.");
-            return;
-        }
-
-        System.out.print("\nВведите имя файла для сохранения (по умолчанию: cars.txt): ");
-        String filename = in.nextLine().trim();
-        if (filename.isEmpty()) {
-            filename = "cars.txt";
-        }
-
-        // Здесь должна быть реализация сохранения в файл
-        System.out.println("Сохранение в файл " + filename + " (заглушка)");
-    }
 
     private static void displaySortingAlgorithmsInfo() {
-        System.out.println("\n=== ИНФОРМАЦИЯ О РЕАЛИЗОВАННЫХ АЛГОРИТМАХ ===");
+        System.out.println("\nИНФОРМАЦИЯ О РЕАЛИЗОВАННЫХ АЛГОРИТМАХ");
         System.out.println("\n1. ПАТТЕРНЫ:");
         System.out.println("   - Стратегия (Strategy):");
         System.out.println("     * Интерфейс SortStrategy");
@@ -255,11 +255,14 @@ public class Main {
 
         System.out.println("\n2. АЛГОРИТМЫ СОРТИРОВКИ (реализованы вручную):");
         System.out.println("   - Пузырьковая сортировка (BubbleSortStrategy)");
+        System.out.println("   - Сортировка Вставкой  (InsertionSortStrategy)");
+        System.out.println("   - Сортировка Выборкой  (SelectionSortStrategy)");
+
 
         System.out.println("\n3. ВАЛИДАЦИЯ ДАННЫХ:");
         System.out.println("   - Модель: не пустая строка");
         System.out.println("   - Мощность: 1-2000 л.с.");
-        System.out.println("   - Год: 1886-текущий год+1");
+        System.out.println("   - Год: 1960-2025");
 
         System.out.println("\n4. ФУНКЦИОНАЛЬНОСТЬ:");
         System.out.println("   - 3 способа ввода данных");
@@ -268,4 +271,3 @@ public class Main {
         System.out.println("   - Валидация всех входных данных");
     }
 }
-
