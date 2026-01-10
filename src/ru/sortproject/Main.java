@@ -6,11 +6,8 @@ import ru.sortproject.structure.CustomList;
 import ru.sortproject.structure.MyArrayList;
 import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.DataLoader;
-
-
+import java.util.Comparator;
 import java.util.Scanner;
-import static ru.sortproject.util.DataLoader.loadManual;
-import static ru.sortproject.util.DataLoader.loadRandom;
 
 public class Main {
     private static final Scanner in = new Scanner(System.in);
@@ -188,28 +185,26 @@ public class Main {
         System.out.println("1. Сортировка Пузырьковая");
         System.out.println("2. Сортировка Вставкой");
         System.out.println("3. Сортировка Выборкой");
-        System.out.println("4. Отмена");
-        System.out.print("Выберите опцию (1-4): ");
+        System.out.println("4. Четно-нечетная сортировка");
+        System.out.println("5. Отмена");
+        System.out.print("Выберите опцию (1-5): ");
 
-        int choice = getMenuChoice(1, 4);
+        int choice = getMenuChoice(1, 5);
 
         // Создаем копию массива для сортировки
         CustomList<Car> carsCopy = copyList(cars);
-        BubbleSortStrategy<Car> bubbleSort = new BubbleSortStrategy<>();
-        SelectionSortStrategy<Car> selectionSort = new SelectionSortStrategy<>();
-        InsertionSortStrategy<Car> insertionSort = new InsertionSortStrategy<>();
-
+        sorterContext.executeSort(carsCopy, new CarComparator());
         switch (choice) {
             case 1:
-                bubbleSort.sort(carsCopy, new CarComparator());
+                sorterContext.setStrategy(new BubbleSortStrategy<>());
                 break;
             case  2:
-                selectionSort.sort(carsCopy, new CarComparator());
-                break;
+                sorterContext.setStrategy(new SelectionSortStrategy<>());                break;
             case 3:
-                insertionSort.sort(carsCopy, new CarComparator());
-
+                sorterContext.setStrategy(new InsertionSortStrategy<>());
             case 4:
+                sorterContext.setStrategy(new EvenOddSortStrategy());
+            case 5:
                 return;
         }
         System.out.println("\nРезультат сортировки:");
@@ -248,15 +243,16 @@ public class Main {
         System.out.println("\n1. ПАТТЕРНЫ:");
         System.out.println("   - Стратегия (Strategy):");
         System.out.println("     * Интерфейс SortStrategy");
-        System.out.println("     * Классы BubbleSortStrategy, SelectionSortStrategy, InsertionSortStrategy");
+        System.out.println("     * Классы BubbleSortStrategy, SelectionSortStrategy, InsertionSortStrategy, EvenOddSortStrategy");
         System.out.println("   - Строитель (Builder):");
-        System.out.println("     * Внутренний класс CarBuilder в классе Car");
+        System.out.println("     * Внутренний класс Builder в классе Car");
         System.out.println("     * Пошаговое создание объектов с валидацией");
 
         System.out.println("\n2. АЛГОРИТМЫ СОРТИРОВКИ (реализованы вручную):");
         System.out.println("   - Пузырьковая сортировка (BubbleSortStrategy)");
         System.out.println("   - Сортировка Вставкой  (InsertionSortStrategy)");
         System.out.println("   - Сортировка Выборкой  (SelectionSortStrategy)");
+        System.out.println("   - Четно-нечетная сортировка (EvenOddSortStrategy)");
 
 
         System.out.println("\n3. ВАЛИДАЦИЯ ДАННЫХ:");
