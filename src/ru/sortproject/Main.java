@@ -193,28 +193,39 @@ public class Main {
 
         // Создаем копию массива для сортировки
         CustomList<Car> carsCopy = copyList(cars);
-        sorterContext.executeSort(carsCopy, new CarComparator());
+
         switch (choice) {
             case 1:
                 sorterContext.setStrategy(new BubbleSortStrategy<>());
                 break;
             case  2:
-                sorterContext.setStrategy(new SelectionSortStrategy<>());                break;
+                sorterContext.setStrategy(new SelectionSortStrategy<>());
+                break;
             case 3:
                 sorterContext.setStrategy(new InsertionSortStrategy<>());
+                break;
             case 4:
                 sorterContext.setStrategy(new EvenOddSortStrategy());
+                break;
             case 5:
                 return;
         }
+        sorterContext.executeSort(carsCopy, new CarComparator());
+
         System.out.println("\nРезультат сортировки:");
-        displayCars();
+        for (int i = 0; i < carsCopy.size(); i++) {
+            Car car = carsCopy.get(i);
+            System.out.println((i + 1) + ". " + car.getPower() + ", " + car.getModel() + ", " + car.getYear() + " г.");
+        }
+        System.out.println();
 
         System.out.print("\nХотите заменить текущие данные отсортированными? (да/нет): ");
         String answer = in.nextLine().trim().toLowerCase();
         if (answer.equals("да") || answer.equals("yes")) {
             cars = carsCopy;
             System.out.println("Данные обновлены.");
+        }else {
+            System.out.println("Данные не изменены.");
         }
     }
 
