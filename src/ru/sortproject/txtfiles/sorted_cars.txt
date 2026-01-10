@@ -1,0 +1,3 @@
+Car{power=10, model='Модель 6812', year=1997}
+Car{power=175, model='Модель 5322', year=1956}
+Car{power=535, model='Модель 2019', year=1959}

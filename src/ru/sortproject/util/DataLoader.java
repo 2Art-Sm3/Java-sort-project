@@ -12,31 +12,62 @@ public class DataLoader {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static CustomList<Car> loadFromFile(String filename) {
-
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             return br.lines()
                     .map(String::trim)
                     .filter(line -> !line.isEmpty())
                     .map(line -> {
-                        String[] parts = line.split(",");
+                        if (!line.startsWith("Car{") || !line.endsWith("}")) {
+                            return null;
+                        }
+                        String content = line.substring(line.indexOf('{') + 1, line.lastIndexOf('}')).trim();
+                        String[] parts = content.split(",\\s*");
                         if (parts.length != 3) return null;
-                        String power = parts[0].trim();
-                        String model = parts[1].trim();
-                        String year = parts[2].trim();
 
-                        if (CarValidator.validatePower(power) &&
-                                CarValidator.validateModel(model) &&
-                                CarValidator.validateYear(year)) {
-                            return new Car.Builder()
-                                    .setPower(Integer.parseInt(power))
-                                    .setModel(model)
-                                    .setYear(Integer.parseInt(year))
-                                    .build();
+                        String powerStr = null;
+                        String model = null;
+                        String yearStr = null;
+
+                        for (String part : parts) {
+                            String[] keyValue = part.split("=");
+                            if (keyValue.length != 2) return null;
+                            String key = keyValue[0].trim();
+                            String value = keyValue[1].trim();
+
+                            switch (key) {
+                                case "power":
+                                    powerStr = value;
+                                    break;
+                                case "model":
+                                    if (value.startsWith("'") && value.endsWith("'") && value.length() >= 2) {
+                                        model = value.substring(1, value.length() - 1);
+                                    } else {
+                                        return null;
+                                    }
+                                    break;
+                                case "year":
+                                    yearStr = value;
+                                    break;
+                                default:
+                                    return null;
+                            }
+                        }
+
+                        if (powerStr != null && model != null && yearStr != null) {
+                            if (CarValidator.validatePower(powerStr) &&
+                                    CarValidator.validateModel(model) &&
+                                    CarValidator.validateYear(yearStr)) {
+                                return new Car.Builder()
+                                        .setPower(Integer.parseInt(powerStr))
+                                        .setModel(model)
+                                        .setYear(Integer.parseInt(yearStr))
+                                        .build();
+                            }
                         }
                         return null;
                     })
+                    .filter(Objects::nonNull)
                     .collect(MyArrayListCollector.carCollector());
-
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
             return new MyArrayList<>();
@@ -45,8 +76,7 @@ public class DataLoader {
 
     public static CustomList<Car> loadManual() {
         CustomList<Car> cars = new MyArrayList<>();
-        System.out.print("Введите длину массива: ");
-        int length = 0;
+        int length;
         while (true) {
             System.out.print("Введите длину массива: ");
             String input = scanner.nextLine();
@@ -101,7 +131,7 @@ public class DataLoader {
         for (int i=0; i<count; i++) {
             int power = rand.nextInt(1000);
             String model = "Модель " + rand.nextInt(10000);
-            int year = rand.nextInt(2015);
+            int year = rand.nextInt(126) + 1900;
             cars.add(new Car.Builder()
                     .setPower(power)
                     .setModel(model)
