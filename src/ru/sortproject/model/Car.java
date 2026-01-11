@@ -1,5 +1,7 @@
 package ru.sortproject.model;
 
+import java.util.Objects;
+
 public class Car {
     private int power;
     private String model;
@@ -17,4 +19,32 @@ public class Car {
         public Car build() { return car; }
     }
 
+    public int getPower() {
+        return power;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "power=" + power +
+                ", model='" + model + '\'' +
+                ", year=" + year +
+                '}';
+    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return power == car.power &&
+                year == car.year &&
+                Objects.equals(model, car.model);
+    }
 }

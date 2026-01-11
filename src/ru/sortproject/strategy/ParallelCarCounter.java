@@ -1,124 +1,93 @@
 package ru.sortproject.strategy;
 
 import ru.sortproject.model.Car;
+import ru.sortproject.structure.CustomList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ParallelCarCounter implements CarCounter {
-    private final int threadCount;
-    private final ExecutorService executor;
-
-    public ParallelCarCounter(int threadCount) {
-        this.threadCount = Math.max(1, threadCount);
-        this.executor = Executors.newFixedThreadPool(this.threadCount);
-    }
-
-    public ParallelCarCounter() {
-        this(Runtime.getRuntime().availableProcessors());
-    }
-
-    public int countOccurrences(Car targetCar, List<Car> cars) {
-        if (targetCar == null || cars == null || cars.isEmpty()) {
+public class ParallelCarCounter {
+    public static <T> int countOccurrences(CustomList<T> list, T target) {
+        if (list == null || list.size() == 0 || target == null) {
             return 0;
         }
 
-        int chunkSize = Math.max(1, cars.size() / threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
-        AtomicInteger totalCount = new AtomicInteger(0);
-
-        for (int i = 0; i < threadCount; i++) {
-            final int start = i * chunkSize;
-            final int end = (i == threadCount - 1) ? cars.size() : start + chunkSize;
-
-            executor.submit(() -> {
-                try {
-                    int localCount = 0;
-                    for (int j = start; j < end && j < cars.size(); j++) {
-                        if (cars.get(j).equals(targetCar)) {
-                            localCount++;
-                        }
-                    }
-                    totalCount.addAndGet(localCount);
-                } finally {
-                    latch.countDown();
-                }
-            });
+        // Для маленьких коллекций используем быстрый последовательный поиск
+        if (list.size() < 1000) {
+            return countSequentially(list, target);
         }
 
-        try {
-            latch.await(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Counting interrupted", e);
-        }
-
-        return totalCount.get();
+        // Используем ForkJoinPool для распараллеливания
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        return pool.invoke(new CountingTask<>(list, target, 0, list.size()));
     }
 
-    public int countOccurrencesWithFutures(Car targetCar, List<Car> cars) {
-        if (targetCar == null || cars == null || cars.isEmpty()) {
-            return 0;
-        }
+    //Последовательный подсчет (для маленьких коллекций)
 
-        int chunkSize = Math.max(1, cars.size() / threadCount);
-        List<Future<Integer>> futures = new ArrayList<>();
-
-        for (int i = 0; i < threadCount; i++) {
-            final int start = i * chunkSize;
-            final int end = (i == threadCount - 1) ? cars.size() : start + chunkSize;
-
-            Callable<Integer> task = () -> {
-                int count = 0;
-                for (int j = start; j < end && j < cars.size(); j++) {
-                    if (cars.get(j).equals(targetCar)) {
-                        count++;
-                    }
-                }
-                return count;
-            };
-
-            futures.add(executor.submit(task));
-        }
-
-        int totalCount = 0;
-        for (Future<Integer> future : futures) {
-            try {
-                totalCount += future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Error getting future result", e);
+    private static <T> int countSequentially(CustomList<T> list, T target) {
+        int count = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (target.equals(list.get(i))) {
+                count++;
             }
         }
-
-        return totalCount;
+        return count;
     }
 
-    public void shutdown() {
-        executor.shutdown();
-        try {
-            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
+    private static class CountingTask<T> extends RecursiveTask<Integer> {
+        // Порог для переключения на последовательный подсчет
+        private static final int THRESHOLD = 1000;
+
+        private final CustomList<T> list;
+        private final T target;
+        private final int start;
+        private final int end;
+
+        CountingTask(CustomList<T> list, T target, int start, int end) {
+            this.list = list;
+            this.target = target;
+            this.start = start;
+            this.end = end;
         }
-    }
 
-    @Override
-    public int countReplay(Car targetCar, List<Car> cars) {
-        return 0;
-    }
+        @Override
+        protected Integer compute() {
+            int length = end - start;
 
-    @Override
-    public String getCounterName() {
-        return String.format("Parallel Counter (%d threads)", threadCount);
-    }
+            // Если диапазон маленький, считаем последовательно
+            if (length <= THRESHOLD) {
+                return computeDirectly();
+            }
 
-    public int getThreadCount() {
-        return threadCount;
+            // Делим задачу на две подзадачи
+            int middle = start + length / 2;
+
+            CountingTask<T> leftTask = new CountingTask<>(list, target, start, middle);
+            CountingTask<T> rightTask = new CountingTask<>(list, target, middle, end);
+
+            // Запускаем левую задачу асинхронно
+            leftTask.fork();
+
+            // Выполняем правую задачу в текущем потоке
+            int rightResult = rightTask.compute();
+
+            // Ждем результат левой задачи
+            int leftResult = leftTask.join();
+
+            // Суммируем результаты
+            return leftResult + rightResult;
+        }
+
+        private int computeDirectly() {
+            int count = 0;
+            for (int i = start; i < end; i++) {
+                if (target.equals(list.get(i))) {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }
