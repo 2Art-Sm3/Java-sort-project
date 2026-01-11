@@ -4,10 +4,10 @@ import ru.sortproject.model.Car;
 import ru.sortproject.strategy.*;
 import ru.sortproject.structure.CustomList;
 import ru.sortproject.structure.MyArrayList;
+import ru.sortproject.test.*;
 import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.CarValidator;
 import ru.sortproject.util.DataLoader;
-import java.util.Comparator;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,13 +25,13 @@ public class Main {
             System.out.println("2. Показать данные");
             System.out.println("3. Сортировать данные");
             System.out.println("4. Многопоточный подсчет автомобилей");
-
             System.out.println("5. Информация о реализованных алгоритмах");
             System.out.println("6. Очистить данные");
-            System.out.println("7. Выход");
-            System.out.print("Выберите опцию (1-7): ");
+            System.out.println("7. Запустить тесты");
+            System.out.println("8. Выход");
+            System.out.print("Выберите опцию (1-8): ");
 
-            int choice = getMenuChoice(1, 7);
+            int choice = getMenuChoice(1, 8);
 
             switch (choice) {
                 case 1:
@@ -45,7 +45,7 @@ public class Main {
                     break;
                 case 4:
                     countCarsParallel();
-                    break;    
+                    break;
                 case 5:
                     displaySortingAlgorithmsInfo();
                     break;
@@ -53,10 +53,36 @@ public class Main {
                     clearData();
                     break;
                 case 7:
+                    runAllTests();
+                    break;
+                case 8:
                     System.out.println("Выход из программы.");
                     shutdownExecutor(); // Закрываем executor
                     return;
             }
+        }
+    }
+
+    private static void runAllTests() {
+        System.out.println("\nЗАПУСК ВСЕХ ТЕСТОВ ");
+
+        try {
+            TestLauncher1.main(new String[]{});
+            System.out.println("\n" + "=".repeat(50));
+            TestLauncher2.main(new String[]{});
+            System.out.println("\n" + "=".repeat(50));
+            TestLauncher3.main(new String[]{});
+            System.out.println("\n" + "=".repeat(50));
+            TestLauncher4.main(new String[]{});
+            System.out.println("\n" + "=".repeat(50));
+            MultithreadingTest.main(new String[]{});
+
+            System.out.println("\nВСЕ ТЕСТЫ ЗАВЕРШЕНЫ");
+            System.out.println("Нажмите Enter для продолжения...");
+            in.nextLine();
+
+        } catch (Exception e) {
+            System.out.println("Ошибка при запуске тестов: " + e.getMessage());
         }
     }
 
