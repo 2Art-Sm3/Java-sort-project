@@ -8,6 +8,8 @@ import ru.sortproject.test.*;
 import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.CarValidator;
 import ru.sortproject.util.DataLoader;
+import ru.sortproject.util.ParallelCarCounter;
+
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -259,97 +261,48 @@ public class Main {
         System.out.print("Выберите опцию (1-4): ");
 
         int choice = getMenuChoice(1, 4);
-
-        switch (choice) {
-            case 1:
-                loadManual();
-                break;
-            case 2:
-                loadRandom();
-                break;
-            case 3:
-                loadFromFile();
-                break;
-            case 4:
-                return;
-        }
-    }
-
-    private static void loadManual(){
-        CustomList<Car> loadedCars = DataLoader.loadManual();
-        if (loadedCars.size() > 0) {
-            if (cars.size() > 0) {
-                System.out.print("\nДобавить к существующим данным? (да/нет): ");
-                String answer = in.nextLine().trim().toLowerCase();
-                if (answer.equals("да") || answer.equals("yes") || answer.equals("y") || answer.equals("д")) {
-                    cars.addAll(loadedCars);
-                    System.out.println("Добавлено " + loadedCars.size() + " автомобилей.");
-                    System.out.println("Всего автомобилей: " + cars.size());
-                } else {
-                    cars = loadedCars;
-                    System.out.println("Загружено " + cars.size() + " автомобилей.");
-                }
-            } else {
-                cars = loadedCars;
-                System.out.println("Загружено " + cars.size() + " автомобилей.");
-            }
-        } else {
-            System.out.println("Не было добавлено ни одного автомобиля.");
-        }
-    }
-
-    private static void loadFromFile() {
-        System.out.print("Введите имя файла (по умолчанию: cars.txt): ");
-        String filename = in.nextLine().trim();
-        if (filename.isEmpty()) {
-            filename = "cars.txt";
-        }
-        // Спрашиваем, добавлять ли к существующим данным
         boolean addToExisting = false;
         if (cars.size() > 0) {
-            System.out.print("Добавить к существующим данным? (да/нет): ");
+            System.out.print("\nТекущая коллекция содержит " + cars.size() + " автомобилей.");
+            System.out.print(" Добавить к существующим? (да/нет): ");
             String answer = in.nextLine().trim().toLowerCase();
             addToExisting = answer.equals("да") || answer.equals("yes") ||
                     answer.equals("y") || answer.equals("д");
         }
 
-        // Загружаем данные из файла
-        CustomList<Car> loadedCars = DataLoader.loadFromFile(filename);
+        CustomList<Car> loadedCars = null;
 
-        // Добавляем загруженные данные
-        if (loadedCars.size() > 0) {
+        switch (choice) {
+            case 1:
+                loadedCars = DataLoader.loadManual();
+                break;
+            case 2:
+                System.out.print("Сколько автомобилей сгенерировать? (1-10000): ");
+                int count = getMenuChoice(1, 10000);
+                loadedCars = DataLoader.loadRandom(count);
+                break;
+            case 3:
+                System.out.print("Введите имя файла (по умолчанию cars.txt): ");
+                String filename = in.nextLine().trim();
+                if (filename.isEmpty()) {
+                    filename = "cars.txt";
+                }
+                loadedCars = DataLoader.loadFromFile(filename);
+                break;
+            case 4:
+                return;
+        }
+        if (loadedCars != null && loadedCars.size() > 0) {
             if (addToExisting) {
                 cars.addAll(loadedCars);
+                System.out.println("\nДобавлено " + loadedCars.size() + " автомобилей.");
+                System.out.println("  Всего автомобилей: " + cars.size());
             } else {
                 cars = loadedCars;
+                System.out.println("\nЗагружено " + cars.size() + " автомобилей.");
             }
-            System.out.println("Всего автомобилей в коллекции: " + cars.size());
         } else {
-            System.out.println("Не удалось загрузить автомобили из файла.");
-        }
-    }
-
-    private static void loadRandom() {
-        System.out.print("Сколько автомобилей сгенерировать? (1-1000): ");
-        int count = getMenuChoice(1, 1000);
-
-        CustomList<Car> loadedCars = DataLoader.loadRandom(count);
-        if (loadedCars.size() > 0) {
-            if (cars.size() > 0) {
-                System.out.print("\nДобавить к существующим данным? (да/нет): ");
-                String answer = in.nextLine().trim().toLowerCase();
-                if (answer.equals("да") || answer.equals("yes") || answer.equals("y") || answer.equals("д")) {
-                    cars.addAll(loadedCars);
-                    System.out.println("Добавлено " + loadedCars.size() + " автомобилей.");
-                    System.out.println("Всего автомобилей: " + cars.size());
-                } else {
-                    cars = loadedCars;
-                    System.out.println("Сгенерировано " + cars.size() + " автомобилей.");
-                }
-            } else {
-                cars = loadedCars;
-                System.out.println("Сгенерировано " + cars.size() + " автомобилей.");
-            }
+            System.out.println("\nНе удалось загрузить данные.");
         }
     }
 
@@ -427,13 +380,13 @@ public class Main {
         }
         System.out.println();
 
-        System.out.print("\nХотите заменить текущие данные отсортированными? (да/нет): ");
-        String answer = in.nextLine().trim().toLowerCase();
-        if (answer.equals("да") || answer.equals("yes")) {
-            cars = carsCopy;
-            System.out.println("Данные обновлены.");
-        }else {
-            System.out.println("Данные не изменены.");
+        System.out.print("\nСохранить отсортированные данные в файл? (да/нет): ");
+        String saveAnswer = in.nextLine().trim().toLowerCase();
+        if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
+            System.out.print("Введите имя файла (Enter для стандартного): ");
+            String filename = in.nextLine().trim();
+
+            sorterContext.saveSortedToFile(carsCopy, filename);
         }
     }
 
@@ -476,7 +429,7 @@ public class Main {
         System.out.println("\n3. ВАЛИДАЦИЯ ДАННЫХ:");
         System.out.println("   - Модель: не пустая строка");
         System.out.println("   - Мощность: 1-2000 л.с.");
-        System.out.println("   - Год: 1960-2025");
+        System.out.println("   - Год: 1900-2025");
 
         System.out.println("\n4. ФУНКЦИОНАЛЬНОСТЬ:");
         System.out.println("   - 3 способа ввода данных");

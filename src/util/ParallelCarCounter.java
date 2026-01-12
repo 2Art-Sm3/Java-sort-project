@@ -1,12 +1,8 @@
-package ru.sortproject.strategy;
+package util;
 
-import ru.sortproject.model.Car;
 import ru.sortproject.structure.CustomList;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ParallelCarCounter {
     public static <T> int countOccurrences(CustomList<T> list, T target) {

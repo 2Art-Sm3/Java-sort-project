@@ -1,7 +1,7 @@
 package ru.sortproject.test;
 
 import ru.sortproject.model.Car;
-import ru.sortproject.strategy.ParallelCarCounter;
+import util.ParallelCarCounter;
 import ru.sortproject.structure.MyArrayList;
 
 /**
