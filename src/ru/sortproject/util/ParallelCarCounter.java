@@ -1,4 +1,4 @@
-package util;
+package ru.sortproject.util;
 
 import ru.sortproject.structure.CustomList;
 

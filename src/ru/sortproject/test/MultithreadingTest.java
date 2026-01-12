@@ -1,12 +1,12 @@
 package ru.sortproject.test;
 
 import ru.sortproject.model.Car;
-import util.ParallelCarCounter;
+import ru.sortproject.util.ParallelCarCounter;
 import ru.sortproject.structure.MyArrayList;
 
-/**
- * Простой ручной тест для многопоточного счетчика
- */
+
+//Простой ручной тест для многопоточного счетчика
+
 public class MultithreadingTest {
 
     public static void main(String[] args) {

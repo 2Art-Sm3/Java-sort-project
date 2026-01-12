@@ -436,6 +436,7 @@ public class Main {
         System.out.println("   - стратегия сортировки");
         System.out.println("   - Многопоточный подсчет автомобилей");
         System.out.println("   - Работа с файлами");
+        System.out.println("   - Сохранение отсортированных данных");
         System.out.println("   - Валидация всех входных данных");
         System.out.println("   - Запуск Тестов");
     }
