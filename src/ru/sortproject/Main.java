@@ -9,6 +9,7 @@ import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.CarValidator;
 import ru.sortproject.util.DataLoader;
 import ru.sortproject.util.ParallelCarCounter;
+import ru.sortproject.util.SaveSortedToFile;
 
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -386,7 +387,7 @@ public class Main {
             System.out.print("Введите имя файла (Enter для стандартного): ");
             String filename = in.nextLine().trim();
 
-            sorterContext.saveSortedToFile(carsCopy, filename);
+            SaveSortedToFile.saveSortedToFile(carsCopy, filename);
         }
     }
 
@@ -441,3 +442,5 @@ public class Main {
         System.out.println("   - Запуск Тестов");
     }
 }
+
+
