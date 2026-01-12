@@ -1,0 +1,10 @@
+0,Toyota,2020
+150,,2020
+150,Toyota,1800
+-50,BMW,2021
+150,Toyota,3000
+abc,Toyota,2020
+150,Toyota,abc
+250,Audi,2025
+170,Skoda,
+,Mazda,2020
