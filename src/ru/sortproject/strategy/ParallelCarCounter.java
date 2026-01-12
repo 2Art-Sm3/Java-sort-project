@@ -52,7 +52,6 @@ public class ParallelCarCounter {
             this.end = end;
         }
 
-        @Override
         protected Integer compute() {
             int length = end - start;
 

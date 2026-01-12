@@ -1,0 +1,40 @@
+150,Toyota Corolla,2020
+200,BMW X5,2021
+180,Honda Civic,2019
+300,Mercedes S-Class,2022
+120,Ford Focus,2018
+250,Audi A6,2021
+170,Volkswagen Golf,2020
+220,Toyota Camry,2021
+190,Honda Accord,2019
+280,BMW 3 Series,2022
+110,Kia Rio,2017
+240,Hyundai Sonata,2021
+130,Nissan Sentra,2018
+270,Lexus ES,2022
+160,Mazda 3,2020
+210,Subaru Outback,2021
+230,Volvo XC60,2021
+140,Chevrolet Malibu,2018
+260,Infiniti Q50,2021
+290,Porsche 911,2022
+100,Jeep Wrangler,2016
+310,Ferrari F8,2023
+90,Fiat 500,2015
+320,Lamborghini Huracan,2023
+80,Smart Fortwo,2014
+330,McLaren 720S,2023
+70,MINI Cooper,2013
+340,Bugatti Chiron,2024
+60,Ford Mustang,2012
+350,Rolls-Royce Phantom,2024
+50,Chevrolet Corvette,2011
+360,Bentley Continental,2024
+40,Dodge Challenger,2010
+370,Aston Martin DB11,2024
+30,Tesla Model S,2009
+380,Maserati Ghibli,2024
+20,Nissan GT-R,2008
+390,Ferrari SF90,2024
+10,Toyota Prius,2007
+400,Bugatti Divo,2024

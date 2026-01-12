@@ -304,6 +304,29 @@ public class Main {
         if (filename.isEmpty()) {
             filename = "cars.txt";
         }
+        // Спрашиваем, добавлять ли к существующим данным
+        boolean addToExisting = false;
+        if (cars.size() > 0) {
+            System.out.print("Добавить к существующим данным? (да/нет): ");
+            String answer = in.nextLine().trim().toLowerCase();
+            addToExisting = answer.equals("да") || answer.equals("yes") ||
+                    answer.equals("y") || answer.equals("д");
+        }
+
+        // Загружаем данные из файла
+        CustomList<Car> loadedCars = DataLoader.loadFromFile(filename);
+
+        // Добавляем загруженные данные
+        if (loadedCars.size() > 0) {
+            if (addToExisting) {
+                cars.addAll(loadedCars);
+            } else {
+                cars = loadedCars;
+            }
+            System.out.println("Всего автомобилей в коллекции: " + cars.size());
+        } else {
+            System.out.println("Не удалось загрузить автомобили из файла.");
+        }
     }
 
     private static void loadRandom() {
@@ -461,5 +484,6 @@ public class Main {
         System.out.println("   - Многопоточный подсчет автомобилей");
         System.out.println("   - Работа с файлами");
         System.out.println("   - Валидация всех входных данных");
+        System.out.println("   - Запуск Тестов");
     }
 }
