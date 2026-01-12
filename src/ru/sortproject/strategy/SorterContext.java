@@ -1,7 +1,6 @@
 package ru.sortproject.strategy;
 
 import ru.sortproject.structure.CustomList;
-
 import java.util.Comparator;
 
 public class SorterContext<T> {
