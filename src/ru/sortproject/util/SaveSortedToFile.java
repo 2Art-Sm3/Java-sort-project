@@ -4,22 +4,18 @@ import ru.sortproject.model.Car;
 import ru.sortproject.structure.CustomList;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class SaveSortedToFile {
-    public static void saveSortedToFile(CustomList<Car> list, String filename) {
 
-        File file = new File(filename);
-        String outputFilename;
+    private SaveSortedToFile() {}
 
-        if (!file.exists()) {
-            outputFilename = "data/sorted_cars.txt";
-            file = new File(outputFilename);
-        }
+    public static void saveSortedToFile(CustomList<Car> list, String fileName) {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        String finalName = (fileName == null || fileName.isEmpty()) ? "sorted_cars.txt" : fileName;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             for (Car car : list) {
                 writer.write(car.toString());
                 writer.newLine();
