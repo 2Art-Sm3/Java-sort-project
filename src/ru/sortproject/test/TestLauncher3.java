@@ -5,52 +5,91 @@ import ru.sortproject.structure.MyArrayList;
 import ru.sortproject.strategy.BubbleSortStrategy;
 import ru.sortproject.strategy.SelectionSortStrategy;
 import ru.sortproject.strategy.InsertionSortStrategy;
-import ru.sortproject.strategy.SorterContext;
+import ru.sortproject.strategy.SortStrategy;
 import ru.sortproject.util.CarComparator;
+
+import java.util.function.Supplier;
 
 public class TestLauncher3 {
     public static void main(String[] args) {
         System.out.println("Test sorting by three fields\n");
-
-        System.out.println("=== TEST BUBBLE SORT ===");
-        testSortingAlgorithm("Bubble Sort", new BubbleSortStrategy<>());
-
-        System.out.println("\n=== TEST SELECTION SORT ===");
-        testSortingAlgorithm("Selection Sort", new SelectionSortStrategy<>());
-
-        System.out.println("\n=== TEST INSERTION SORT ===");
-        testSortingAlgorithm("Insertion Sort", new InsertionSortStrategy<>());
-
-        System.out.println("\nTest edge cases");
-        testSpecialCases();
+        testAllAlgorithms();
+        testEdgeCases();
+        System.out.println("\nAll tests completed.");
     }
 
-    private static void testSortingAlgorithm(String algorithmName, Object strategy) {
-        MyArrayList<Car> cars = createTestCars();
+    private static void testAllAlgorithms() {
+        testAlgorithm(BubbleSortStrategy::new, "Bubble Sort");
+        testAlgorithm(SelectionSortStrategy::new, "Selection Sort");
+        testAlgorithm(InsertionSortStrategy::new, "Insertion Sort");
+    }
 
+    private static void testAlgorithm(Supplier<SortStrategy<Car>> strategySupplier, String algorithmName) {
+        System.out.println("\n=== " + algorithmName + " ===");
+        MyArrayList<Car> cars = createTestCars();
         System.out.println("Original list:");
         printCars(cars);
 
-        SorterContext<Car> sorter = new SorterContext<>();
+        strategySupplier.get().sort(cars, new CarComparator());
 
-        if (strategy instanceof BubbleSortStrategy) {
-            sorter.setStrategy((BubbleSortStrategy<Car>) strategy);
-        } else if (strategy instanceof SelectionSortStrategy) {
-            sorter.setStrategy((SelectionSortStrategy<Car>) strategy);
-        } else if (strategy instanceof InsertionSortStrategy) {
-            sorter.setStrategy((InsertionSortStrategy<Car>) strategy);
-        }
-
-        CarComparator comparator = new CarComparator();
-
-        sorter.executeSort(cars, comparator);
-
-        System.out.println("\nSorted list (" + algorithmName + "):");
+        System.out.println("\nSorted list:");
         printCars(cars);
 
-        System.out.println("\nCheck sorting correctness");
-        checkSortingCorrectness(cars, comparator);
+        System.out.println("\nChecking sorting correctness");
+        checkSortingCorrectness(cars);
     }
+
+    private static void testEdgeCases() {
+        System.out.println("\n=== EDGE CASES ===");
+
+        SortStrategy<Car> strategy = new BubbleSortStrategy<>();
+        CarComparator comparator = new CarComparator();
+
+        System.out.println("\n1. Empty list:");
+        testEdgeCase(strategy, new MyArrayList<>(), comparator, true);
+
+        System.out.println("\n2. Single element:");
+        testEdgeCase(strategy, createSingleElementList(), comparator, true);
+
+        System.out.println("\n3. Identical elements:");
+        testEdgeCase(strategy, createIdenticalElementsList(), comparator, true);
+
+        System.out.println("\n4. Null list:");
+        testNullCase("null list", () -> strategy.sort(null, comparator));
+
+        System.out.println("\n5. Null comparator:");
+        testNullCase("null comparator", () -> strategy.sort(createSingleElementList(), null));
+    }
+
+    private static void testEdgeCase(SortStrategy<Car> strategy, MyArrayList<Car> list,
+                                     CarComparator comparator, boolean expectSuccess) {
+        try {
+            strategy.sort(list, comparator);
+            if (expectSuccess) {
+                System.out.println("PASS - Handled correctly");
+            } else {
+                System.out.println("FAIL - Should have thrown exception");
+            }
+        } catch (Exception e) {
+            if (expectSuccess) {
+                System.out.println("FAIL - Unexpected exception: " + e.getMessage());
+            } else {
+                System.out.println("PASS - Correctly rejected: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void testNullCase(String caseName, Runnable test) {
+        try {
+            test.run();
+            System.out.println("FAIL - Shoould have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            System.out.println("PASS - " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("FAIL - Wrong exception type: " + e.getClass().getSimpleName());
+        }
+    }
+
 
     private static MyArrayList<Car> createTestCars() {
         MyArrayList<Car> list = new MyArrayList<>();
@@ -67,18 +106,31 @@ public class TestLauncher3 {
         return list;
     }
 
+    private static MyArrayList<Car> createSingleElementList() {
+        MyArrayList<Car> list = new MyArrayList<>();
+        list.add(new Car.Builder().setPower(100).setModel("Test").setYear(2023).build());
+        return list;
+    }
+
+    private static MyArrayList<Car> createIdenticalElementsList() {
+        MyArrayList<Car> list = new MyArrayList<>();
+        Car template = new Car.Builder().setPower(150).setModel("Same").setYear(2020).build();
+        list.add(template);
+        list.add(template);
+        list.add(template);
+        return list;
+    }
+
     private static void printCars(MyArrayList<Car> cars) {
         for (int i = 0; i < cars.size(); i++) {
             Car car = cars.get(i);
             System.out.printf("%d. %s - %d hp, %d year%n",
-                    i + 1,
-                    car.getModel(),
-                    car.getPower(),
-                    car.getYear());
+                    i + 1, car.getModel(), car.getPower(), car.getYear());
         }
     }
 
-    private static void checkSortingCorrectness(MyArrayList<Car> cars, CarComparator comparator) {
+    private static void checkSortingCorrectness(MyArrayList<Car> cars) {
+        CarComparator comparator = new CarComparator();
         boolean correctlySorted = true;
 
         for (int i = 0; i < cars.size() - 1; i++) {
@@ -98,137 +150,12 @@ public class TestLauncher3 {
 
         if (correctlySorted) {
             System.out.println("PASS - All elements are sorted correctly");
-
             System.out.println("\nSorting order:");
             System.out.println("1. By power (ascending)");
             System.out.println("2. If powers are equal - by year (ascending)");
             System.out.println("3. If power and year are equal - by model (alphabetical)");
+        } else {
+            System.out.println("FAIL - Sorting errors detected");
         }
-    }
-
-    private static void testSpecialCases() {
-        System.out.println("\n1. Test with empty list:");
-        MyArrayList<Car> emptyList = new MyArrayList<>();
-        try {
-            new BubbleSortStrategy<Car>().sort(emptyList, new CarComparator());
-            System.out.println("Bubble Sort: PASS - Empty list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Bubble Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new SelectionSortStrategy<Car>().sort(emptyList, new CarComparator());
-            System.out.println("Selection Sort: PASS - Empty list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Selection Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new InsertionSortStrategy<Car>().sort(emptyList, new CarComparator());
-            System.out.println("Insertion Sort: PASS - Empty list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Insertion Sort ERROR: " + e.getMessage());
-        }
-
-        System.out.println("\n2. Test with single element list:");
-        MyArrayList<Car> singleElement = new MyArrayList<>();
-        singleElement.add(new Car.Builder().setPower(100).setModel("Test").setYear(2023).build());
-
-        try {
-            new BubbleSortStrategy<Car>().sort(singleElement, new CarComparator());
-            System.out.println("Bubble Sort: PASS - Single element list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Bubble Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new SelectionSortStrategy<Car>().sort(singleElement, new CarComparator());
-            System.out.println("Selection Sort: PASS - Single element list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Selection Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new InsertionSortStrategy<Car>().sort(singleElement, new CarComparator());
-            System.out.println("Insertion Sort: PASS - Single element list handled correctly");
-        } catch (Exception e) {
-            System.out.println("Insertion Sort ERROR: " + e.getMessage());
-        }
-
-        System.out.println("\n3. Test with identical elements:");
-        MyArrayList<Car> sameCars = new MyArrayList<>();
-        sameCars.add(new Car.Builder().setPower(150).setModel("Same").setYear(2020).build());
-        sameCars.add(new Car.Builder().setPower(150).setModel("Same").setYear(2020).build());
-        sameCars.add(new Car.Builder().setPower(150).setModel("Same").setYear(2020).build());
-
-        try {
-            new BubbleSortStrategy<Car>().sort(sameCars, new CarComparator());
-            System.out.println("Bubble Sort: PASS - Identical elements handled correctly");
-        } catch (Exception e) {
-            System.out.println("Bubble Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new SelectionSortStrategy<Car>().sort(sameCars, new CarComparator());
-            System.out.println("Selection Sort: PASS - Identical elements handled correctly");
-        } catch (Exception e) {
-            System.out.println("Selection Sort ERROR: " + e.getMessage());
-        }
-
-        try {
-            new InsertionSortStrategy<Car>().sort(sameCars, new CarComparator());
-            System.out.println("Insertion Sort: PASS - Identical elements handled correctly");
-        } catch (Exception e) {
-            System.out.println("Insertion Sort ERROR: " + e.getMessage());
-        }
-
-        System.out.println("\n4. Test null list:");
-        try {
-            new BubbleSortStrategy<Car>().sort(null, new CarComparator());
-            System.out.println("Bubble Sort ERROR: Should throw exception for null list");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Bubble Sort PASS - Null list correctly rejected: " + e.getMessage());
-        }
-
-        try {
-            new SelectionSortStrategy<Car>().sort(null, new CarComparator());
-            System.out.println("Selection Sort ERROR: Should throw exception for null list");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Selection Sort PASS - Null list correctly rejected: " + e.getMessage());
-        }
-
-        try {
-            new InsertionSortStrategy<Car>().sort(null, new CarComparator());
-            System.out.println("Insertion Sort ERROR: Should throw exception for null list");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Insertion Sort PASS - Null list correctly rejected: " + e.getMessage());
-        }
-
-        System.out.println("\n5. Test null comparator:");
-        MyArrayList<Car> testList = new MyArrayList<>();
-        testList.add(new Car.Builder().setPower(100).setModel("Test").setYear(2023).build());
-
-        try {
-            new BubbleSortStrategy<Car>().sort(testList, null);
-            System.out.println("Bubble Sort ERROR: Should throw exception for null comparator");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Bubble Sort PASS - Null comparator correctly rejected: " + e.getMessage());
-        }
-
-        try {
-            new SelectionSortStrategy<Car>().sort(testList, null);
-            System.out.println("Selection Sort ERROR: Should throw exception for null comparator");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Selection Sort PASS - Null comparator correctly rejected: " + e.getMessage());
-        }
-
-        try {
-            new InsertionSortStrategy<Car>().sort(testList, null);
-            System.out.println("Insertion Sort ERROR: Should throw exception for null comparator");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Insertion Sort PASS - Null comparator correctly rejected: " + e.getMessage());
-        }
-
-        System.out.println("\nAll tests completed.");
     }
 }
