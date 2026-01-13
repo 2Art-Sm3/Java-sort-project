@@ -1,40 +1,40 @@
-150,Toyota Corolla,2020
-200,BMW X5,2021
-180,Honda Civic,2019
-300,Mercedes S-Class,2022
-120,Ford Focus,2018
-250,Audi A6,2021
-170,Volkswagen Golf,2020
-220,Toyota Camry,2021
-190,Honda Accord,2019
-280,BMW 3 Series,2022
-110,Kia Rio,2017
-240,Hyundai Sonata,2021
-130,Nissan Sentra,2018
-270,Lexus ES,2022
-160,Mazda 3,2020
-210,Subaru Outback,2021
-230,Volvo XC60,2021
-140,Chevrolet Malibu,2018
-260,Infiniti Q50,2021
-290,Porsche 911,2022
-100,Jeep Wrangler,2016
-310,Ferrari F8,2023
-90,Fiat 500,2015
-320,Lamborghini Huracan,2023
-80,Smart Fortwo,2014
-330,McLaren 720S,2023
-70,MINI Cooper,2013
-340,Bugatti Chiron,2024
-60,Ford Mustang,2012
-350,Rolls-Royce Phantom,2024
-50,Chevrolet Corvette,2011
-360,Bentley Continental,2024
-40,Dodge Challenger,2010
-370,Aston Martin DB11,2024
-30,Tesla Model S,2009
-380,Maserati Ghibli,2024
-20,Nissan GT-R,2008
-390,Ferrari SF90,2024
-10,Toyota Prius,2007
-400,Bugatti Divo,2024
+Car{power=150, model='Toyota Corolla', year=2020}
+Car{power=200, model='BMW X5', year=2021}
+Car{power=180, model='Honda Civic', year=2019}
+Car{power=300, model='Mercedes S-Class', year=2022}
+Car{power=120, model='Ford Focus', year=2018}
+Car{power=250, model='Audi A6', year=2021}
+Car{power=170, model='Volkswagen Golf', year=2020}
+Car{power=220, model='Toyota Camry', year=2021}
+Car{power=190, model='Honda Accord', year=2019}
+Car{power=280, model='BMW 3 Series', year=2022}
+Car{power=110, model='Kia Rio', year=2017}
+Car{power=240, model='Hyundai Sonata', year=2021}
+Car{power=130, model='Nissan Sentra', year=2018}
+Car{power=270, model='Lexus ES', year=2022}
+Car{power=160, model='Mazda 3', year=2020}
+Car{power=210, model='Subaru Outback', year=2021}
+Car{power=230, model='Volvo XC60', year=2021}
+Car{power=140, model='Chevrolet Malibu', year=2018}
+Car{power=260, model='Infiniti Q50', year=2021}
+Car{power=290, model='Porsche 911', year=2022}
+Car{power=100, model='Jeep Wrangler', year=2016}
+Car{power=310, model='Ferrari F8', year=2023}
+Car{power=90, model='Fiat 500', year=2015}
+Car{power=320, model='Lamborghini Huracan', year=2023}
+Car{power=80, model='Smart Fortwo', year=2014}
+Car{power=330, model='McLaren 720S', year=2023}
+Car{power=70, model='MINI Cooper', year=2013}
+Car{power=340, model='Bugatti Chiron', year=2024}
+Car{power=60, model='Ford Mustang', year=2012}
+Car{power=350, model='Rolls-Royce Phantom', year=2024}
+Car{power=50, model='Chevrolet Corvette', year=2011}
+Car{power=360, model='Bentley Continental', year=2024}
+Car{power=40, model='Dodge Challenger', year=2010}
+Car{power=370, model='Aston Martin DB11', year=2024}
+Car{power=30, model='Tesla Model S', year=2009}
+Car{power=380, model='Maserati Ghibli', year=2024}
+Car{power=20, model='Nissan GT-R', year=2008}
+Car{power=390, model='Ferrari SF90', year=2024}
+Car{power=10, model='Toyota Prius', year=2007}
+Car{power=400, model='Bugatti Divo', year=2024}
