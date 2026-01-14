@@ -5,11 +5,7 @@ import ru.sortproject.strategy.*;
 import ru.sortproject.structure.CustomList;
 import ru.sortproject.structure.MyArrayList;
 import ru.sortproject.test.*;
-import ru.sortproject.util.CarComparator;
-import ru.sortproject.util.CarValidator;
-import ru.sortproject.util.DataLoader;
-import ru.sortproject.util.ParallelCarCounter;
-import ru.sortproject.util.SaveSortedToFile;
+import ru.sortproject.util.*;
 
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -28,13 +24,11 @@ public class Main {
             System.out.println("2. Показать данные");
             System.out.println("3. Сортировать данные");
             System.out.println("4. Многопоточный подсчет автомобилей");
-            System.out.println("5. Информация о реализованных алгоритмах");
-            System.out.println("6. Очистить данные");
-            System.out.println("7. Запустить тесты");
-            System.out.println("8. Выход");
-            System.out.print("Выберите опцию (1-8): ");
+            System.out.println("5. Очистить данные");
+            System.out.println("6. Выход");
+            System.out.print("Выберите опцию (1-6): ");
 
-            int choice = getMenuChoice(1, 8);
+            int choice = getMenuChoice(1, 6);
 
             switch (choice) {
                 case 1:
@@ -50,42 +44,13 @@ public class Main {
                     countCarsParallel();
                     break;
                 case 5:
-                    displaySortingAlgorithmsInfo();
-                    break;
-                case 6:
                     clearData();
                     break;
-                case 7:
-                    runAllTests();
-                    break;
-                case 8:
+                case 6:
                     System.out.println("Выход из программы.");
-                    shutdownExecutor(); // Закрываем executor
+                    shutdownExecutor(); // завершение работы потоков
                     return;
             }
-        }
-    }
-
-    private static void runAllTests() {
-        System.out.println("\nЗАПУСК ВСЕХ ТЕСТОВ ");
-
-        try {
-            TestLauncher1.main(new String[]{});
-            System.out.println("\n" + "=".repeat(50));
-            TestLauncher2.main(new String[]{});
-            System.out.println("\n" + "=".repeat(50));
-            TestLauncher3.main(new String[]{});
-            System.out.println("\n" + "=".repeat(50));
-            TestLauncher4.main(new String[]{});
-            System.out.println("\n" + "=".repeat(50));
-            MultithreadingTest.main(new String[]{});
-
-            System.out.println("\nВСЕ ТЕСТЫ ЗАВЕРШЕНЫ");
-            System.out.println("Нажмите Enter для продолжения...");
-            in.nextLine();
-
-        } catch (Exception e) {
-            System.out.println("Ошибка при запуске тестов: " + e.getMessage());
         }
     }
 
@@ -99,46 +64,26 @@ public class Main {
             return;
         }
 
-        System.out.println("\n🔍 МНОГОПОТОЧНЫЙ ПОДСЧЕТ АВТОМОБИЛЕЙ");
+        System.out.println("\nМНОГОПОТОЧНЫЙ ПОДСЧЕТ АВТОМОБИЛЕЙ");
         System.out.println("=".repeat(40));
 
-        // Показываем автомобили для выбора
-        System.out.println("Автомобили в коллекции:");
-        int showCount = Math.min(10, cars.size());
-        for (int i = 0; i < showCount; i++) {
-            System.out.printf((i + 1) + "." + cars.get(i));
-        }
-
         System.out.println("\nВыберите автомобиль для подсчета:");
-        System.out.println("1. Выбрать из списка выше");
-        System.out.println("2. Задать автомобиль для поиска вручную");
-        System.out.println("3. Использовать первый автомобиль");
-        System.out.println("4. Отмена");
-        System.out.print("Выберите опцию (1-4): ");
+        System.out.println("1. Задать автомобиль для поиска вручную");
+        System.out.println("2. Отмена");
+        System.out.print("Выберите опцию (1-2): ");
 
-        int choice = getMenuChoice(1, 4);
+        int choice = getMenuChoice(1, 2);
         Car targetCar = null;
 
         switch (choice) {
             case 1:
-                System.out.print("Введите номер автомобиля: " );
-                int carNum = getMenuChoice(1, showCount);
-                targetCar = cars.get(carNum - 1);
-                break;
-
-            case 2:
                 targetCar = createCarForSearch();
                 if (targetCar == null) {
                     System.out.println("Ошибка создания автомобиля.");
                     return;
                 }
                 break;
-
-            case 3:
-                targetCar = cars.get(0);
-                break;
-
-            case 4:
+            case 2:
                 return;
         }
 
@@ -146,16 +91,11 @@ public class Main {
             System.out.println("Не выбран автомобиль для подсчета.");
             return;
         }
-        int checkCount = showCount;
-        for (int i = 0; i < checkCount; i++) {
-            Car currentCar = cars.get(i);
-            boolean isEqual = targetCar.equals(currentCar);
-        }
         System.out.println("\nЗАПУСК МНОГОПОТОЧНОГО ПОИСКА...");
         int count = ParallelCarCounter.countOccurrences(cars, targetCar);
         System.out.println("\nРЕЗУЛЬТАТ ПОДСЧЕТА:");
         System.out.println("=".repeat(40));
-        System.out.println("Автомобиль: " + targetCar);
+        System.out.println("Искомый автомобиль: " + targetCar);
         System.out.println("Размер коллекции: " + cars.size());
         System.out.println("Найдено вхождений: " + count);
 
@@ -186,16 +126,19 @@ public class Main {
                     foundCars.add(cars.get(i));
                 }
             }
-            System.out.print("\nСохранить отсортированные данные в файл? (да/нет): ");
+            System.out.print("\nСохранить полученные данные в файл? (да/нет): ");
             String saveAnswer = in.nextLine().trim().toLowerCase();
             if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
                 System.out.print("Введите имя файла (Enter для стандартного): ");
                 String filename = in.nextLine().trim();
+                if (filename.isEmpty()) {
+                    filename = "found_cars.txt";
+                }
                 SaveSortedToFile.saveSortedToFile(foundCars, filename);
             }
         }
     }
-
+//Поиск Авто
     private static Car createCarForSearch() {
         System.out.println("\nСОЗДАНИЕ АВТОМОБИЛЯ ДЛЯ ПОИСКА");
         System.out.println("-".repeat(30));
@@ -342,8 +285,6 @@ public class Main {
         System.out.println("\n");
     }
 
-
-
     private static void sortData() {
         if (cars.size() == 0) {
             System.out.println("Нет данных для сортировки.");
@@ -361,7 +302,7 @@ public class Main {
         int choice = getMenuChoice(1, 5);
 
         // Создаем копию массива для сортировки
-        CustomList<Car> carsCopy = copyList(cars);
+        CustomList<Car> carsCopy = CarListUtil.copyList(cars);
 
         switch (choice) {
             case 1:
@@ -393,59 +334,9 @@ public class Main {
         if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
             System.out.print("Введите имя файла (Enter для стандартного): ");
             String filename = in.nextLine().trim();
+
             SaveSortedToFile.saveSortedToFile(carsCopy, filename);
         }
-    }
-
-    private static CustomList<Car> copyList(CustomList<Car> cars) {
-        if (cars == null) {
-            return new MyArrayList<>();
-        }
-        CustomList<Car> copy = new MyArrayList<>();
-        for (int i = 0; i < cars.size(); i++) {
-            Car originalCar = cars.get(i);
-            // Создаем глубокую копию через Builder
-            Car copiedCar = new Car.Builder()
-                    .setModel(originalCar.getModel())
-                    .setPower(originalCar.getPower())
-                    .setYear(originalCar.getYear())
-                    .build();
-
-            copy.add(copiedCar);
-        }
-        return copy;
-    }
-
-
-    private static void displaySortingAlgorithmsInfo() {
-        System.out.println("\nИНФОРМАЦИЯ О РЕАЛИЗОВАННЫХ АЛГОРИТМАХ");
-        System.out.println("\n1. ПАТТЕРНЫ:");
-        System.out.println("   - Стратегия (Strategy):");
-        System.out.println("     * Интерфейс SortStrategy");
-        System.out.println("     * Классы BubbleSortStrategy, SelectionSortStrategy, InsertionSortStrategy, EvenOddSortStrategy");
-        System.out.println("   - Строитель (Builder):");
-        System.out.println("     * Внутренний класс Builder в классе Car");
-        System.out.println("     * Пошаговое создание объектов с валидацией");
-
-        System.out.println("\n2. АЛГОРИТМЫ СОРТИРОВКИ (реализованы вручную):");
-        System.out.println("   - Пузырьковая сортировка (BubbleSortStrategy)");
-        System.out.println("   - Сортировка Вставкой  (InsertionSortStrategy)");
-        System.out.println("   - Сортировка Выборкой  (SelectionSortStrategy)");
-        System.out.println("   - Четно-нечетная сортировка (EvenOddSortStrategy)");
-
-        System.out.println("\n3. ВАЛИДАЦИЯ ДАННЫХ:");
-        System.out.println("   - Модель: не пустая строка");
-        System.out.println("   - Мощность: 1-2000 л.с.");
-        System.out.println("   - Год: 1900-2025");
-
-        System.out.println("\n4. ФУНКЦИОНАЛЬНОСТЬ:");
-        System.out.println("   - 3 способа ввода данных");
-        System.out.println("   - стратегия сортировки");
-        System.out.println("   - Многопоточный подсчет автомобилей");
-        System.out.println("   - Работа с файлами");
-        System.out.println("   - Сохранение отсортированных данных");
-        System.out.println("   - Валидация всех входных данных");
-        System.out.println("   - Запуск Тестов");
     }
 }
 

@@ -1,12 +1,10 @@
-150,Toyota Corolla,2020
-200,BMW X5,2021
-180,Honda Civic,2019
-300,Mercedes S-Class,2022
-120,Ford Focus,2018
-250,Audi A6,2021
-170,Volkswagen Golf,2020
-220,Toyota Camry,2021
-190,Honda Accord,2019
-280,BMW 3 Series,2022
-150,Toyota Corolla,2020
-150,Toyota Corolla,2020
+Car{power=150, model='Toyota Corolla', year = 2020}
+Car{power=200, model='BMW X5', year=2021}
+Car{power=180, model='Honda Civic', year=2019}
+Car{power=300, model='Mercedes S-Class', year=2022}
+Car{power=120, model='Ford Focus', year=2018}
+Car{power=250, model='Audi A6', year=2021}
+Car{power=170, model='Volkswagen Golf', year=2020}
+Car{power=220, model='Toyota Camry', year=2021}
+Car{power=190, model='Honda Accord', year=2019}
+Car{power=280, model='BMW 3 Series', year=2022}
