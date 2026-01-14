@@ -4,7 +4,7 @@ public class CarValidator {
     public static boolean validatePower(String powerStr) {
         try {
             int power = Integer.parseInt(powerStr);
-            return power >= 0;
+            return power > 0;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -17,7 +17,7 @@ public class CarValidator {
     public static boolean validateYear(String yearStr) {
         try {
             int year = Integer.parseInt(yearStr);
-            return year >= 0;
+            return year >= 1985 && year <= 2025;
         } catch (NumberFormatException e) {
             return false;
         }

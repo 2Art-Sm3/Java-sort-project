@@ -63,7 +63,6 @@ public class DataLoader {
                                 }
                             }
                             return null;
-                            // Добавил разделение через запятую
                         } else {
                             String[] parts = line.split(",\\s*");
                             if (parts.length != 3) return null;
@@ -72,14 +71,16 @@ public class DataLoader {
                             String model = parts[1];
                             String yearStr = parts[2];
 
-                            if (CarValidator.validatePower(powerStr) &&
-                                    CarValidator.validateModel(model) &&
-                                    CarValidator.validateYear(yearStr)) {
-                                return new Car.Builder()
-                                        .setPower(Integer.parseInt(powerStr))
-                                        .setModel(model)
-                                        .setYear(Integer.parseInt(yearStr))
-                                        .build();
+                            if (powerStr != null && model != null && yearStr != null) {
+                                if (CarValidator.validatePower(powerStr) &&
+                                        CarValidator.validateModel(model) &&
+                                        CarValidator.validateYear(yearStr)) {
+                                    return new Car.Builder()
+                                            .setPower(Integer.parseInt(powerStr))
+                                            .setModel(model)
+                                            .setYear(Integer.parseInt(yearStr))
+                                            .build();
+                                }
                             }
                         }
                         return null;
