@@ -10,31 +10,12 @@ public class ParallelCarCounter {
             return 0;
         }
 
-        // Для маленьких коллекций используем быстрый последовательный поиск
-        if (list.size() < 1000) {
-            return countSequentially(list, target);
-        }
-
         // Используем ForkJoinPool для распараллеливания
         ForkJoinPool pool = ForkJoinPool.commonPool();
         return pool.invoke(new CountingTask<>(list, target, 0, list.size()));
     }
 
-    //Последовательный подсчет (для маленьких коллекций)
-
-    private static <T> int countSequentially(CustomList<T> list, T target) {
-        int count = 0;
-        for (int i = 0; i < list.size(); i++) {
-            if (target.equals(list.get(i))) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     private static class CountingTask<T> extends RecursiveTask<Integer> {
-        // Порог для переключения на последовательный подсчет
-        private static final int THRESHOLD = 1000;
 
         private final CustomList<T> list;
         private final T target;
@@ -51,8 +32,8 @@ public class ParallelCarCounter {
         protected Integer compute() {
             int length = end - start;
 
-            // Если диапазон маленький, считаем последовательно
-            if (length <= THRESHOLD) {
+            // Базовый случай: один элемент
+            if (length == 1) {
                 return computeDirectly();
             }
 
@@ -76,13 +57,12 @@ public class ParallelCarCounter {
         }
 
         private int computeDirectly() {
-            int count = 0;
-            for (int i = start; i < end; i++) {
-                if (target.equals(list.get(i))) {
-                    count++;
-                }
+            try {
+                // Для одного элемента просто проверяем равенство
+                return target.equals(list.get(start)) ? 1 : 0;
+            } catch (Exception e) {
+                return 0;
             }
-            return count;
         }
     }
 }

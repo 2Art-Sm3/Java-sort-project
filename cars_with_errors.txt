@@ -1,10 +1,10 @@
-0,Toyota,2020
-150,,2020
-150,Toyota,1800
--50,BMW,2021
-150,Toyota,3000
-abc,Toyota,2020
-150,Toyota,abc
-250,Audi,2025
-170,Skoda,
-,Mazda,2020
+Car{power=0, model='Toyota', year=2020}
+Car{power=150, model='', year=2020}
+Car{power=150, model='Toyota', year=1800}
+Car{power=-50, model='BMW', year=2021}
+Car{power=150, model='Toyota', year=3000}
+Car{power=abc, model='Toyota', year=2020}
+Car{power=150, model='Toyota', year=abc}
+Car{power=250, model='Audi', year=2025}
+Car{power=170, model='Skoda', year=}
+Car{power=, model='Mazda', year=2020}
