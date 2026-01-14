@@ -63,6 +63,7 @@ public class DataLoader {
                                 }
                             }
                             return null;
+                            // Добавил разделение через запятую
                         } else {
                             String[] parts = line.split(",\\s*");
                             if (parts.length != 3) return null;
