@@ -15,7 +15,7 @@ public class SaveSortedToFile {
 
         String finalName = (fileName == null || fileName.isEmpty()) ? "sorted_cars.txt" : fileName;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(finalName, true))) {
             for (Car car : list) {
                 writer.write(car.toString());
                 writer.newLine();
