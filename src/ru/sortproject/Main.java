@@ -186,6 +186,13 @@ public class Main {
                     foundCars.add(cars.get(i));
                 }
             }
+            System.out.print("\nСохранить отсортированные данные в файл? (да/нет): ");
+            String saveAnswer = in.nextLine().trim().toLowerCase();
+            if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
+                System.out.print("Введите имя файла (Enter для стандартного): ");
+                String filename = in.nextLine().trim();
+                SaveSortedToFile.saveSortedToFile(foundCars, filename);
+            }
         }
     }
 
@@ -386,7 +393,6 @@ public class Main {
         if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
             System.out.print("Введите имя файла (Enter для стандартного): ");
             String filename = in.nextLine().trim();
-
             SaveSortedToFile.saveSortedToFile(carsCopy, filename);
         }
     }

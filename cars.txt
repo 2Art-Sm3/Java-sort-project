@@ -8,3 +8,5 @@
 220,Toyota Camry,2021
 190,Honda Accord,2019
 280,BMW 3 Series,2022
+150,Toyota Corolla,2020
+150,Toyota Corolla,2020

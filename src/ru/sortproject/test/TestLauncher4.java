@@ -19,22 +19,21 @@ public class TestLauncher4 {
         String fullPath = outputFile.getAbsolutePath();
 
         CustomList<Car> cars = DataLoader.loadRandom(5); // метод loadRandom
-        SaveSortedToFile saver = new SaveSortedToFile();
         SorterContext<Car> sorter = new SorterContext<>();
         BubbleSortStrategy<Car> sortCarsBub = new BubbleSortStrategy<>();
         CarComparator comparator = new CarComparator();
 
         sorter.setStrategy(sortCarsBub);
         sorter.executeSort(cars,comparator);
-        saver.saveSortedToFile(cars,fullPath);     // Запись отсортированной коллекции в файл в режиме append
+        SaveSortedToFile.saveSortedToFile(cars,fullPath);     // Запись отсортированной коллекции в файл в режиме append
 
         cars = DataLoader.loadManual();             // Ручной ввод коллекции
         sorter.executeSort(cars,comparator);
-        saver.saveSortedToFile(cars,fullPath);
+        SaveSortedToFile.saveSortedToFile(cars,fullPath);
 
         cars = DataLoader.loadFromFile(fullPath);   //Загрузка коллекции из файла в формате toString
         sorter.executeSort(cars,comparator);
-        saver.saveSortedToFile(cars,fullPath);
+        SaveSortedToFile.saveSortedToFile(cars,fullPath);
 
         System.out.println("Тест завершён!");
 

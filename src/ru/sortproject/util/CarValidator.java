@@ -17,7 +17,7 @@ public class CarValidator {
     public static boolean validateYear(String yearStr) {
         try {
             int year = Integer.parseInt(yearStr);
-            return year >= 1985 && year <= 2025;
+            return year >= 1960 && year <= 2025;
         } catch (NumberFormatException e) {
             return false;
         }

@@ -150,7 +150,7 @@ public class DataLoader {
         for (int i=0; i<count; i++) {
             int power = rand.nextInt(1000);
             String model = "Модель " + rand.nextInt(10000);
-            int year = rand.nextInt(126) + 1900;
+            int year = rand.nextInt(65) + 1960;
             cars.add(new Car.Builder()
                     .setPower(power)
                     .setModel(model)
