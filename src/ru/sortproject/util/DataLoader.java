@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class DataLoader {
+
+    private DataLoader() {}
+
     private static final Scanner scanner = new Scanner(System.in);
 
     public static CustomList<Car> loadFromFile(String filename) {

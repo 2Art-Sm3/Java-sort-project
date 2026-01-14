@@ -5,6 +5,9 @@ import ru.sortproject.structure.CustomList;
 import ru.sortproject.structure.MyArrayList;
 
 public class CarListUtil {
+
+    private CarListUtil() {}
+
     public static CustomList<Car> copyList(CustomList<Car> cars) {
         if (cars == null) {
             return new MyArrayList<>();
