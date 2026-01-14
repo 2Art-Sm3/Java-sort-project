@@ -1,0 +1,3 @@
+Car{power=150, model='Toyota Corolla', year=2020}
+Car{power=150, model='Toyota Corolla', year=2020}
+Car{power=150, model='Toyota Corolla', year=2020}
