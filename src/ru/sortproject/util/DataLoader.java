@@ -17,43 +17,60 @@ public class DataLoader {
                     .map(String::trim)
                     .filter(line -> !line.isEmpty())
                     .map(line -> {
-                        if (!line.startsWith("Car{") || !line.endsWith("}")) {
-                            return null;
-                        }
-                        String content = line.substring(line.indexOf('{') + 1, line.lastIndexOf('}')).trim();
-                        String[] parts = content.split(",\\s*");
-                        if (parts.length != 3) return null;
+                        if (line.startsWith("Car{") && line.endsWith("}")) {
+                            String content = line.substring(line.indexOf('{') + 1, line.lastIndexOf('}')).trim();
+                            String[] parts = content.split(",\\s*");
+                            if (parts.length != 3) return null;
 
-                        String powerStr = null;
-                        String model = null;
-                        String yearStr = null;
+                            String powerStr = null;
+                            String model = null;
+                            String yearStr = null;
 
-                        for (String part : parts) {
-                            String[] keyValue = part.split("=");
-                            if (keyValue.length != 2) return null;
-                            String key = keyValue[0].trim();
-                            String value = keyValue[1].trim();
+                            for (String part : parts) {
+                                String[] keyValue = part.split("=");
+                                if (keyValue.length != 2) return null;
+                                String key = keyValue[0].trim();
+                                String value = keyValue[1].trim();
 
-                            switch (key) {
-                                case "power":
-                                    powerStr = value;
-                                    break;
-                                case "model":
-                                    if (value.startsWith("'") && value.endsWith("'") && value.length() >= 2) {
-                                        model = value.substring(1, value.length() - 1);
-                                    } else {
+                                switch (key) {
+                                    case "power":
+                                        powerStr = value;
+                                        break;
+                                    case "model":
+                                        if (value.startsWith("'") && value.endsWith("'") && value.length() >= 2) {
+                                            model = value.substring(1, value.length() - 1);
+                                        } else {
+                                            return null;
+                                        }
+                                        break;
+                                    case "year":
+                                        yearStr = value;
+                                        break;
+                                    default:
                                         return null;
-                                    }
-                                    break;
-                                case "year":
-                                    yearStr = value;
-                                    break;
-                                default:
-                                    return null;
+                                }
                             }
-                        }
 
-                        if (powerStr != null && model != null && yearStr != null) {
+                            if (powerStr != null && model != null && yearStr != null) {
+                                if (CarValidator.validatePower(powerStr) &&
+                                        CarValidator.validateModel(model) &&
+                                        CarValidator.validateYear(yearStr)) {
+                                    return new Car.Builder()
+                                            .setPower(Integer.parseInt(powerStr))
+                                            .setModel(model)
+                                            .setYear(Integer.parseInt(yearStr))
+                                            .build();
+                                }
+                            }
+                            return null;
+                        } else {
+                            String[] parts = line.split(",\\s*");
+                            if (parts.length != 3) return null;
+
+                            String powerStr = parts[0];
+                            String model = parts[1];
+                            String yearStr = parts[2];
+
                             if (CarValidator.validatePower(powerStr) &&
                                     CarValidator.validateModel(model) &&
                                     CarValidator.validateYear(yearStr)) {
