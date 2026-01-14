@@ -1,7 +1,9 @@
 package ru.sortproject.util;
 
 public class CarValidator {
+
     public static boolean validatePower(String powerStr) {
+
         try {
             int power = Integer.parseInt(powerStr);
             return power > 0;

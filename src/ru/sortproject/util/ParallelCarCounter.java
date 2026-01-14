@@ -9,7 +9,6 @@ public class ParallelCarCounter {
         if (list == null || list.size() == 0 || target == null) {
             return 0;
         }
-
         // Используем ForkJoinPool для распараллеливания
         ForkJoinPool pool = ForkJoinPool.commonPool();
         return pool.invoke(new CountingTask<>(list, target, 0, list.size()));

@@ -25,7 +25,7 @@ public class EvenOddSortStrategy implements SortStrategy<Car> {
         if (evens.size() < 1)
             return;
 
-        BubbleSortStrategy<Car> bubble = new BubbleSortStrategy<>();
+        SortStrategy<Car> bubble = new BubbleSortStrategy<>();
         bubble.sort(evens, (c1, c2) -> Integer.compare(c1.getPower(), c2.getPower()));
 
         int count = 0;

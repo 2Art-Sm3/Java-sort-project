@@ -4,9 +4,9 @@ import ru.sortproject.model.Car;
 import ru.sortproject.strategy.*;
 import ru.sortproject.structure.CustomList;
 import ru.sortproject.structure.MyArrayList;
-import ru.sortproject.test.*;
 import ru.sortproject.util.*;
 
+import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 public class Main {
     private static final Scanner in = new Scanner(System.in);
     private static CustomList<Car> cars = new MyArrayList<>();
-    private static final SorterContext<Car> sorterContext = new SorterContext<Car>();
+    private static final SorterContext<Car> sorterContext = new SorterContext<>();
     private static final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
     public static void main(String[] args) {
@@ -86,7 +86,6 @@ public class Main {
             case 2:
                 return;
         }
-
         if (targetCar == null) {
             System.out.println("Не выбран автомобиль для подсчета.");
             return;
@@ -101,7 +100,7 @@ public class Main {
 
         if (count == 0) {
             System.out.println("\nТакого автомобиля нет в коллекции.");
-        }else {
+        } else {
             System.out.println("Показать все найденные автомобили? (да/нет):");
             String answer = in.nextLine().trim().toLowerCase();
             if (answer.equals("да") || answer.equals("yes")) {
@@ -145,6 +144,7 @@ public class Main {
 
         try {
             String powerStr, model, yearStr;
+
             do {
                 System.out.print("Мощность: ");
                 powerStr = in.nextLine();
@@ -154,7 +154,6 @@ public class Main {
             } while (!CarValidator.validatePower(powerStr));
             int power = Integer.parseInt(powerStr);
 
-            // Ввод модели с валидацией
             do {
                 System.out.print("Модель: ");
                 model = in.nextLine();
@@ -163,7 +162,6 @@ public class Main {
                 }
             } while (!CarValidator.validateModel(model));
 
-            // Ввод года с валидацией
             do {
                 System.out.print("Год выпуска: ");
                 yearStr = in.nextLine();
@@ -181,7 +179,6 @@ public class Main {
 
             System.out.println("Создан автомобиль для поиска: " + car);
             return car;
-
         } catch (Exception e) {
             System.out.println("Ошибка создания автомобиля: " + e.getMessage());
             return null;
@@ -189,17 +186,18 @@ public class Main {
     }
 
     private static void clearData() {
-        if (cars.size() > 0) {
-            System.out.print("Вы уверены, что хотите очистить все данные? (да/нет): ");
-            String answer = in.nextLine().trim().toLowerCase();
-            if (answer.equals("да") || answer.equals("yes")) {
-                cars = new MyArrayList<>();
-                System.out.println("Данные очищены.");
-            } else {
-                System.out.println("Очистка отменена.");
-            }
+        if (cars.size() == 0) {
+            System.out.println("Коллекция уже пуста.");
+            return;
+        }
+        System.out.print("Вы уверены, что хотите очистить все данные (" + cars.size() + " шт.)? (да/нет): ");
+        String answer = in.nextLine().trim().toLowerCase();
+
+        if (answer.equals("да") || answer.equals("yes") || answer.equals("y")) {
+            cars.clear();
+            System.out.println("Данные успешно очищены.");
         } else {
-            System.out.println("Очистка отменена.");
+            System.out.println("Очистка отменена пользователем.");
         }
     }
 
@@ -235,10 +233,16 @@ public class Main {
             case 3:
                 System.out.print("Введите имя файла (по умолчанию cars.txt): ");
                 String filename = in.nextLine().trim();
-                if (filename.isEmpty()) {
-                    filename = "cars.txt";
+                if (filename.isEmpty()) filename = "cars.txt";
+
+                String fullPath = "data/" + filename;
+
+                File file = new File(fullPath);
+                if(!file.exists()) {
+                    System.out.println("Файл не найден по адресу: " + file.getAbsolutePath());
+                    return;
                 }
-                loadedCars = DataLoader.loadFromFile(filename);
+                loadedCars = DataLoader.loadFromFile(fullPath);
                 break;
             case 4:
                 return;
@@ -276,13 +280,18 @@ public class Main {
             System.out.println("Нет данных для отображения.");
             return;
         }
-
         System.out.println("\n СПИСОК АВТОМОБИЛЕЙ");
-        for (int i = 0; i < cars.size(); i++) {
-            Car car = cars.get(i);
-            System.out.println((i + 1) + ", " + car.getPower() + ", " + car.getModel() + ", " + car.getYear() + " г.");
+        System.out.printf("%-4s | %-10s | %-20s | %-10s\n", "№", "Мощность", "Модель", "Год");
+        System.out.println("-".repeat(50));
+        int counter = 1;
+        for (Car car : cars) {
+            System.out.printf("%-4d | %-7d л.с. | %-20s | %d г.\n",
+                    counter++,
+                    car.getPower(),
+                    car.getModel(),
+                    car.getYear());
         }
-        System.out.println("\n");
+        System.out.println("-".repeat(50) + "\n");
     }
 
     private static void sortData() {
@@ -290,7 +299,6 @@ public class Main {
             System.out.println("Нет данных для сортировки.");
             return;
         }
-
         System.out.println("\nВЫБОР СТРАТЕГИИ СОРТИРОВКИ");
         System.out.println("1. Сортировка Пузырьковая");
         System.out.println("2. Сортировка Вставкой");
@@ -309,10 +317,10 @@ public class Main {
                 sorterContext.setStrategy(new BubbleSortStrategy<>());
                 break;
             case  2:
-                sorterContext.setStrategy(new SelectionSortStrategy<>());
+                sorterContext.setStrategy(new InsertionSortStrategy<>());
                 break;
             case 3:
-                sorterContext.setStrategy(new InsertionSortStrategy<>());
+                sorterContext.setStrategy(new SelectionSortStrategy<>());
                 break;
             case 4:
                 sorterContext.setStrategy(new EvenOddSortStrategy());
@@ -322,19 +330,23 @@ public class Main {
         }
         sorterContext.executeSort(carsCopy, new CarComparator());
 
-        System.out.println("\nРезультат сортировки:");
-        for (int i = 0; i < carsCopy.size(); i++) {
-            Car car = carsCopy.get(i);
-            System.out.println((i + 1) + ". " + car.getPower() + ", " + car.getModel() + ", " + car.getYear() + " г.");
+        System.out.println("\n РЕЗУЛЬТАТ СОРТИРОВКИ:");
+        System.out.printf("%-4s | %-10s | %-20s | %-10s\n", "№", "Мощность", "Модель", "Год");
+        System.out.println("-".repeat(50));
+
+        int counter = 1;
+        for (Car car : carsCopy) {
+            System.out.printf("%-4d | %-7d л.с. | %-20s | %d г.\n",
+                    counter++, car.getPower(), car.getModel(), car.getYear());
         }
-        System.out.println();
+        System.out.println("-".repeat(50));
 
         System.out.print("\nСохранить отсортированные данные в файл? (да/нет): ");
         String saveAnswer = in.nextLine().trim().toLowerCase();
-        if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
-            System.out.print("Введите имя файла (Enter для стандартного): ");
-            String filename = in.nextLine().trim();
 
+        if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
+            System.out.print("Введите имя файла (Enter для 'sorted_cars.txt'): ");
+            String filename = in.nextLine().trim();
             SaveSortedToFile.saveSortedToFile(carsCopy, filename);
         }
     }
