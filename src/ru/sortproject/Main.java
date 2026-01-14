@@ -28,7 +28,7 @@ public class Main {
             System.out.println("6. Выход");
             System.out.print("Выберите опцию (1-6): ");
 
-            int choice = getMenuChoice(1, 7);
+            int choice = getMenuChoice(1, 6);
 
             switch (choice) {
                 case 1:
@@ -43,10 +43,10 @@ public class Main {
                 case 4:
                     countCarsParallel();
                     break;
-                case 6:
+                case 5:
                     clearData();
                     break;
-                case 7:
+                case 6:
                     System.out.println("Выход из программы.");
                     shutdownExecutor(); // завершение работы потоков
                     return;
