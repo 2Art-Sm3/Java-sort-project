@@ -38,3 +38,4 @@ Car{power=20, model='Nissan GT-R', year=2008}
 Car{power=390, model='Ferrari SF90', year=2024}
 Car{power=10, model='Toyota Prius', year=2007}
 Car{power=400, model='Bugatti Divo', year=2024}
+Car{power=50, model='Chevrolet Corvette', year=2011}

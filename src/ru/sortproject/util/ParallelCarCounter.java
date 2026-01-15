@@ -5,6 +5,9 @@ import ru.sortproject.structure.CustomList;
 import java.util.concurrent.*;
 
 public class ParallelCarCounter {
+
+    private ParallelCarCounter() {}
+
     public static <T> int countOccurrences(CustomList<T> list, T target) {
         if (list == null || list.size() == 0 || target == null) {
             return 0;
@@ -27,7 +30,6 @@ public class ParallelCarCounter {
             this.start = start;
             this.end = end;
         }
-
         protected Integer compute() {
             int length = end - start;
 

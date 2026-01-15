@@ -97,54 +97,11 @@ public class DataLoader {
     }
 
     public static CustomList<Car> loadManual() {
-        CustomList<Car> cars = new MyArrayList<>();
-        int length;
-        while (true) {
-            System.out.print("Введите длину массива: ");
-            String input = scanner.nextLine();
-            try {
-                length = Integer.parseInt(input);
-                if (length > 0) break;
-                else System.out.println("Длина должна быть положительным числом");
-            } catch (NumberFormatException e) {
-                System.out.println("Некорректный ввод. Попробуйте еще раз.");
-            }
-        }
+        int length = readLength();
 
-        IntStream.range(0, length).forEach(i -> {
-            System.out.println("Введите данные для автомобиля #" + (i + 1));
-            String powerStr, model, yearStr;
-
-            do {
-                System.out.print("Мощность: ");
-                powerStr = scanner.nextLine();
-                if (!CarValidator.validatePower(powerStr)) {
-                    System.out.println("Некорректное значение мощности. Попробуйте еще раз.");
-                }
-            } while (!CarValidator.validatePower(powerStr));
-            int power = Integer.parseInt(powerStr);
-
-            do {
-                System.out.print("Модель: ");
-                model = scanner.nextLine();
-            } while (!CarValidator.validateModel(model));
-
-            do {
-                System.out.print("Год производства: ");
-                yearStr = scanner.nextLine();
-                if (!CarValidator.validateYear(yearStr)) {
-                    System.out.println("Некорректный формат. Попробуйте еще раз.");
-                }
-            } while (!CarValidator.validateYear(yearStr));
-            int year = Integer.parseInt(yearStr);
-
-            cars.add(new Car.Builder()
-                    .setPower(power)
-                    .setModel(model)
-                    .setYear(year)
-                    .build());
-        });
-        return cars;
+        return IntStream.range(0, length)
+                .mapToObj(i -> readCarFromConsole(i))
+                .collect(MyArrayListCollector.carCollector());
     }
 
     public static CustomList<Car> loadRandom(int count) {
@@ -156,5 +113,54 @@ public class DataLoader {
                         .setYear(rand.nextInt(65) + 1960)
                         .build())
                 .collect(MyArrayListCollector.carCollector());
+    }
+
+    private static Car readCarFromConsole(int index) {
+        System.out.println("Введите данные для автомобиля #" + (index + 1));
+        String powerStr, model, yearStr;
+
+        do {
+            System.out.print("Мощность: ");
+            powerStr = scanner.nextLine();
+            if (!CarValidator.validatePower(powerStr)) {
+                System.out.println("Некорректное значение мощности. Попробуйте еще раз.");
+            }
+        } while (!CarValidator.validatePower(powerStr));
+
+        do {
+            System.out.print("Модель: ");
+            model = scanner.nextLine();
+            if (!CarValidator.validateModel(model)) {
+                System.out.println("Некорректное название. Попробуйте еще раз.");
+            }
+        } while (!CarValidator.validateModel(model));
+
+        do {
+            System.out.print("Год производства: ");
+            yearStr = scanner.nextLine();
+            if (!CarValidator.validateYear(yearStr)) {
+                System.out.println("Некорректный формат года. Попробуйте еще раз.");
+            }
+        } while (!CarValidator.validateYear(yearStr));
+
+        return new Car.Builder()
+                .setPower(Integer.parseInt(powerStr))
+                .setModel(model)
+                .setYear(Integer.parseInt(yearStr))
+                .build();
+    }
+
+    private static int readLength() {
+        while (true) {
+            System.out.print("Введите количество автомобилей: ");
+            String input = scanner.nextLine();
+            try {
+                int length = Integer.parseInt(input);
+                if (length > 0) return length;
+                System.out.println("Длина должна быть положительным числом.");
+            } catch (NumberFormatException e) {
+                System.out.println("Некорректный ввод. Попробуйте еще раз.");
+            }
+        }
     }
 }
