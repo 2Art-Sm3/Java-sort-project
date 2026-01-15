@@ -16,7 +16,7 @@ public class ParallelCarCounter {
     }
 
     private static class CountingTask<T> extends RecursiveTask<Integer> {
-
+        private static final int THRESHOLD = 100;
         private final CustomList<T> list;
         private final T target;
         private final int start;
@@ -32,12 +32,16 @@ public class ParallelCarCounter {
         protected Integer compute() {
             int length = end - start;
 
-            // Базовый случай: один элемент
-            if (length == 1) {
-                return computeDirectly();
+            // Если элементов немного
+            if (length <= THRESHOLD) {
+                int count = 0;
+                for (int i = start; i < end; i++) {
+                    if (target.equals(list.get(i))) count++;
+                }
+                return count;
             }
 
-            // Делим задачу на две подзадачи
+            //Иначе -- Делим задачу на две подзадачи
             int middle = start + length / 2;
 
             CountingTask<T> leftTask = new CountingTask<>(list, target, start, middle);
@@ -54,15 +58,6 @@ public class ParallelCarCounter {
 
             // Суммируем результаты
             return leftResult + rightResult;
-        }
-
-        private int computeDirectly() {
-            try {
-                // Для одного элемента просто проверяем равенство
-                return target.equals(list.get(start)) ? 1 : 0;
-            } catch (Exception e) {
-                return 0;
-            }
         }
     }
 }
