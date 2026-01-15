@@ -4,28 +4,33 @@ import ru.sortproject.model.Car;
 import ru.sortproject.structure.CustomList;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class SaveSortedToFile {
-    public static void saveSortedToFile(CustomList<Car> list, String filename) {
 
-        File file = new File(filename);
-        String outputFilename;
+    private SaveSortedToFile() {}
 
-        if (!file.exists()) {
-            outputFilename = "data/sorted_cars.txt";
-            file = new File(outputFilename);
-        }
+    public static void saveSortedToFile(CustomList<Car> list, String fileName) {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        String name = (fileName == null || fileName.isEmpty()) ? "sorted_cars.txt" : fileName;
+        String finalPath = "data/" + name;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(finalPath, true))) {
+            writer.newLine();
+            writer.write("--- Запись от " + LocalDateTime.now() + " ---");
+            writer.newLine();
+
             for (Car car : list) {
                 writer.write(car.toString());
                 writer.newLine();
             }
+            writer.write("------------------------------------------");
+            writer.newLine();
+            System.out.println("Данные добавлены в файл: " + finalPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Ошибка записи: " + e.getMessage());
         }
     }
 }

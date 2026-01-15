@@ -5,6 +5,7 @@ import ru.sortproject.structure.MyArrayList;
 import java.util.stream.Collector;
 
 public class MyArrayListCollector {
+
     public static <T> Collector<T, MyArrayList<T>, MyArrayList<T>> carCollector() {
         return Collector.of(
                 MyArrayList::new,
