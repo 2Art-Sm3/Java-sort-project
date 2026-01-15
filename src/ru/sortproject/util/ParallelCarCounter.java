@@ -18,7 +18,7 @@ public class ParallelCarCounter {
     }
 
     private static class CountingTask<T> extends RecursiveTask<Integer> {
-        private static final int THRESHOLD = 100;
+        private static final int THRESHOLD = 10;
         private final CustomList<T> list;
         private final T target;
         private final int start;
@@ -35,6 +35,10 @@ public class ParallelCarCounter {
 
             // Если элементов немного
             if (length <= THRESHOLD) {
+
+                System.out.println("Поток [" + Thread.currentThread().getName() +
+                        "] обрабатывает диапазон: " + start + " - " + end);
+
                 int count = 0;
                 for (int i = start; i < end; i++) {
                     if (target.equals(list.get(i))) count++;
