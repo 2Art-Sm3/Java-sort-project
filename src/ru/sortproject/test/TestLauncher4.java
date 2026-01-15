@@ -8,34 +8,33 @@ import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.DataLoader;
 import ru.sortproject.util.SaveSortedToFile;
 
-import java.io.File;
 
 public class TestLauncher4 {
     public static void main(String[] args) {
 
-        String directoryPath = "src/ru/sortproject/txtfiles"; // название папки внутри проекта
-        File dir = new File(directoryPath);
-        File outputFile = new File(dir, "sorted_cars.txt");
-        String fullPath = outputFile.getAbsolutePath();
+        String fileName = "sorted_cars.txt";
+        String loadPath = "data/" + fileName;
 
-        CustomList<Car> cars = DataLoader.loadRandom(5); // метод loadRandom
         SorterContext<Car> sorter = new SorterContext<>();
-        BubbleSortStrategy<Car> sortCarsBub = new BubbleSortStrategy<>();
+        sorter.setStrategy(new BubbleSortStrategy<>());
         CarComparator comparator = new CarComparator();
 
-        sorter.setStrategy(sortCarsBub);
-        sorter.executeSort(cars,comparator);
-        SaveSortedToFile.saveSortedToFile(cars,fullPath);     // Запись отсортированной коллекции в файл в режиме append
+        System.out.println("--- Этап 1: Random Load ---");
+        CustomList<Car> carsRand = DataLoader.loadRandom(5);
+        sorter.executeSort(carsRand, comparator);
+        SaveSortedToFile.saveSortedToFile(carsRand, fileName);
 
-        cars = DataLoader.loadManual();             // Ручной ввод коллекции
-        sorter.executeSort(cars,comparator);
-        SaveSortedToFile.saveSortedToFile(cars,fullPath);
+        System.out.println("\n--- Этап 2: Manual Load ---");
+        CustomList<Car> carsManual = DataLoader.loadManual();
+        sorter.executeSort(carsManual, comparator);
+        SaveSortedToFile.saveSortedToFile(carsManual, fileName);
 
-        cars = DataLoader.loadFromFile(fullPath);   //Загрузка коллекции из файла в формате toString
-        sorter.executeSort(cars,comparator);
-        SaveSortedToFile.saveSortedToFile(cars,fullPath);
+        System.out.println("\n--- Этап 3: Load From File ---");
+        CustomList<Car> carsFromFile = DataLoader.loadFromFile("data/cars.txt");
+        sorter.executeSort(carsFromFile, comparator);
+        SaveSortedToFile.saveSortedToFile(carsFromFile, fileName);
 
-        System.out.println("Тест завершён!");
+        System.out.println("\n✅ Тест успешно завершён! Проверьте папку data/" + fileName);
 
     }
 }
