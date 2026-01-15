@@ -218,7 +218,7 @@ public class Main {
 
                 File file = new File(fullPath);
                 if(!file.exists()) {
-                    System.out.println("Файл не найден: " + file.getAbsolutePath());
+                    System.out.println("Файл не найден по адресу: " + file.getAbsolutePath());
                     return;
                 }
                 loadedCars = DataLoader.loadFromFile(fullPath);

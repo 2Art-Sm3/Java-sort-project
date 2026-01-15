@@ -9,4 +9,5 @@ public interface CustomList<T> extends Iterable<T> {
     int size();
     T[] toArray(Class<T> clazz);
     boolean addAll(CustomList<T> other);
+    void clear();
 }

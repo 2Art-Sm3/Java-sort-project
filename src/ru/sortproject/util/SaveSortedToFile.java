@@ -6,16 +6,31 @@ import ru.sortproject.structure.CustomList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class SaveSortedToFile {
-    public void saveSortedToFile(CustomList<Car> list, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+
+    private SaveSortedToFile() {}
+
+    public static void saveSortedToFile(CustomList<Car> list, String fileName) {
+
+        String name = (fileName == null || fileName.isEmpty()) ? "sorted_cars.txt" : fileName;
+        String finalPath = "data/" + name;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(finalPath, true))) {
+            writer.newLine();
+            writer.write("--- Запись от " + LocalDateTime.now() + " ---");
+            writer.newLine();
+
             for (Car car : list) {
                 writer.write(car.toString());
                 writer.newLine();
             }
+            writer.write("------------------------------------------");
+            writer.newLine();
+            System.out.println("Данные добавлены в файл: " + finalPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Ошибка записи: " + e.getMessage());
         }
     }
 }

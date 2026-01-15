@@ -90,4 +90,12 @@ public class MyArrayList<T> implements CustomList<T> {
         }
         return changed;
     }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i < size; i++) {
+            values[i] = null;
+        }
+        size = 0;
+    }
 }
