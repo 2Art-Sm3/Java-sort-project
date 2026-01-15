@@ -8,14 +8,11 @@ import ru.sortproject.util.*;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Main {
     private static final Scanner in = new Scanner(System.in);
     private static CustomList<Car> cars = new MyArrayList<>();
     private static final SorterContext<Car> sorterContext = new SorterContext<>();
-    private static final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor();
 
     public static void main(String[] args) {
         while (true) {
@@ -48,14 +45,9 @@ public class Main {
                     break;
                 case 6:
                     System.out.println("Выход из программы.");
-                    shutdownExecutor(); // завершение работы потоков
                     return;
             }
         }
-    }
-
-    private static void shutdownExecutor() {
-        backgroundExecutor.shutdown();
     }
 
     private static void countCarsParallel() {
@@ -90,7 +82,7 @@ public class Main {
             System.out.println("Не выбран автомобиль для подсчета.");
             return;
         }
-        System.out.println("\nЗАПУСК МНОГОПОТОЧНОГО ПОИСКА...");
+
         int count = ParallelCarCounter.countOccurrences(cars, targetCar);
         System.out.println("\nРЕЗУЛЬТАТ ПОДСЧЕТА:");
         System.out.println("=".repeat(40));
@@ -98,46 +90,34 @@ public class Main {
         System.out.println("Размер коллекции: " + cars.size());
         System.out.println("Найдено вхождений: " + count);
 
-        if (count == 0) {
-            System.out.println("\nТакого автомобиля нет в коллекции.");
-        } else {
-            System.out.println("Показать все найденные автомобили? (да/нет):");
+        if (count > 0) {
+            // 2. Собираем найденные машины в один список ОДНИМ циклом
+            CustomList<Car> foundCars = new MyArrayList<>();
+            for (Car c : cars) {
+                if (c.equals(targetCar)) foundCars.add(c);
+            }
+            System.out.print("Показать найденные авто? (да/нет): ");
             String answer = in.nextLine().trim().toLowerCase();
             if (answer.equals("да") || answer.equals("yes")) {
-                System.out.println("\nНАЙДЕННЫЕ АВТОМОБИЛИ:");
-                System.out.println("=".repeat(50));
+                System.out.printf("%-4s | %-10s | %-20s | %-10s\n", "№", "Мощность", "Модель", "Год");
+                int counter = 1;
+                for (Car c : foundCars) {
+                    System.out.printf("%-4d | %-7d л.с. | %-20s | %d г.\n",
+                            counter++, c.getPower(), c.getModel(), c.getYear());
+                }
+                System.out.println("-".repeat(50));
+            }
 
-                int foundCount = 0;
-                for (int i = 0; i < cars.size(); i++) {
-                    if (cars.get(i).equals(targetCar)) {
-                        foundCount++;
-                        System.out.printf("%4d. %s (позиция: %d)\n",
-                                foundCount, cars.get(i), i + 1);
-                    }
-                }
-                if (foundCount == 0) {
-                    System.out.println("Автомобили не найдены (хотя счетчик показал > 0)");
-                }
-            }
-            CustomList<Car> foundCars = new MyArrayList<>();
-            for (int i = 0; i < cars.size(); i++) {
-                if (cars.get(i).equals(targetCar)) {
-                    foundCars.add(cars.get(i));
-                }
-            }
-            System.out.print("\nСохранить полученные данные в файл? (да/нет): ");
-            String saveAnswer = in.nextLine().trim().toLowerCase();
-            if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
-                System.out.print("Введите имя файла (Enter для стандартного): ");
+            System.out.print("\nСохранить найденные результаты в файл? (да/нет): ");
+            if (answer.equals("да") || answer.equals("yes")) {
+                System.out.print("Введите имя файла (Enter для 'found_cars.txt'): ");
                 String filename = in.nextLine().trim();
-                if (filename.isEmpty()) {
-                    filename = "found_cars.txt";
-                }
+                if (filename.isEmpty()) filename = "found_cars.txt";
                 SaveSortedToFile.saveSortedToFile(foundCars, filename);
             }
         }
     }
-//Поиск Авто
+    //Поиск Авто
     private static Car createCarForSearch() {
         System.out.println("\nСОЗДАНИЕ АВТОМОБИЛЯ ДЛЯ ПОИСКА");
         System.out.println("-".repeat(30));
@@ -149,7 +129,7 @@ public class Main {
                 System.out.print("Мощность: ");
                 powerStr = in.nextLine();
                 if (!CarValidator.validatePower(powerStr)) {
-                    System.out.println("Некорректная мощность. Допустимо: 1-2000 л.с.");
+                    System.out.println("Некорректная мощность");
                 }
             } while (!CarValidator.validatePower(powerStr));
             int power = Integer.parseInt(powerStr);
@@ -193,7 +173,7 @@ public class Main {
         System.out.print("Вы уверены, что хотите очистить все данные (" + cars.size() + " шт.)? (да/нет): ");
         String answer = in.nextLine().trim().toLowerCase();
 
-        if (answer.equals("да") || answer.equals("yes") || answer.equals("y")) {
+        if (answer.equals("да") || answer.equals("yes")) {
             cars.clear();
             System.out.println("Данные успешно очищены.");
         } else {
@@ -215,8 +195,7 @@ public class Main {
             System.out.print("\nТекущая коллекция содержит " + cars.size() + " автомобилей.");
             System.out.print(" Добавить к существующим? (да/нет): ");
             String answer = in.nextLine().trim().toLowerCase();
-            addToExisting = answer.equals("да") || answer.equals("yes") ||
-                    answer.equals("y") || answer.equals("д");
+            addToExisting = answer.equals("да") || answer.equals("yes");
         }
 
         CustomList<Car> loadedCars = null;
@@ -351,5 +330,3 @@ public class Main {
         }
     }
 }
-
-
