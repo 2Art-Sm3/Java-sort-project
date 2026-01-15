@@ -8,7 +8,6 @@ import ru.sortproject.util.CarComparator;
 import ru.sortproject.util.DataLoader;
 import ru.sortproject.util.SaveSortedToFile;
 
-import java.io.File;
 
 public class TestLauncher4 {
     public static void main(String[] args) {
