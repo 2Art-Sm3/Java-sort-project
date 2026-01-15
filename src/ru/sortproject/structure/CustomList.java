@@ -7,7 +7,6 @@ public interface CustomList<T> extends Iterable<T> {
     T get(int index);
     void update(int index, T element);
     int size();
-    T[] toArray(Class<T> clazz);
     boolean addAll(CustomList<T> other);
     void clear();
 }

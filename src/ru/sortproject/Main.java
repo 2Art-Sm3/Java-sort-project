@@ -55,10 +55,8 @@ public class Main {
             System.out.println("Нет данных для подсчета.");
             return;
         }
-
         System.out.println("\nМНОГОПОТОЧНЫЙ ПОДСЧЕТ АВТОМОБИЛЕЙ");
         System.out.println("=".repeat(40));
-
         System.out.println("\nВыберите автомобиль для подсчета:");
         System.out.println("1. Задать автомобиль для поиска вручную");
         System.out.println("2. Отмена");
@@ -91,25 +89,31 @@ public class Main {
         System.out.println("Найдено вхождений: " + count);
 
         if (count > 0) {
-            // 2. Собираем найденные машины в один список ОДНИМ циклом
             CustomList<Car> foundCars = new MyArrayList<>();
             for (Car c : cars) {
                 if (c.equals(targetCar)) foundCars.add(c);
             }
-            System.out.print("Показать найденные авто? (да/нет): ");
-            String answer = in.nextLine().trim().toLowerCase();
-            if (answer.equals("да") || answer.equals("yes")) {
-                System.out.printf("%-4s | %-10s | %-20s | %-10s\n", "№", "Мощность", "Модель", "Год");
-                int counter = 1;
-                for (Car c : foundCars) {
-                    System.out.printf("%-4d | %-7d л.с. | %-20s | %d г.\n",
-                            counter++, c.getPower(), c.getModel(), c.getYear());
-                }
-                System.out.println("-".repeat(50));
-            }
+            System.out.print("Показать найденные авто на экране? (да/нет): ");
+            String showAnswer = in.nextLine().trim().toLowerCase();
 
+            if (showAnswer.equals("да") || showAnswer.equals("yes")) {
+                System.out.printf("%-4s | %-12s | %-10s | %-20s | %-10s\n", "№", "Индекс", "Мощность", "Модель", "Год");
+                System.out.println("-".repeat(65));
+
+                int displayCounter = 1;
+
+                for (int i = 0; i < cars.size(); i++) {
+                    Car current = cars.get(i);
+                    if (current.equals(targetCar)) {
+                        System.out.printf("%-4d | %-12d | %-7d л.с. | %-20s | %d г.\n",
+                                displayCounter++, i, current.getPower(), current.getModel(), current.getYear());
+                    }
+                }
+                System.out.println("-".repeat(65));
+            }
             System.out.print("\nСохранить найденные результаты в файл? (да/нет): ");
-            if (answer.equals("да") || answer.equals("yes")) {
+            String saveAnswer = in.nextLine().trim().toLowerCase();
+            if (saveAnswer.equals("да") || saveAnswer.equals("yes")) {
                 System.out.print("Введите имя файла (Enter для 'found_cars.txt'): ");
                 String filename = in.nextLine().trim();
                 if (filename.isEmpty()) filename = "found_cars.txt";

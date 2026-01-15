@@ -6,6 +6,8 @@ import java.util.stream.Collector;
 
 public class MyArrayListCollector {
 
+    private MyArrayListCollector() {}
+
     public static <T> Collector<T, MyArrayList<T>, MyArrayList<T>> carCollector() {
         return Collector.of(
                 MyArrayList::new,

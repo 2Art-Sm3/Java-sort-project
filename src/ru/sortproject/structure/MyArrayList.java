@@ -1,6 +1,5 @@
 package ru.sortproject.structure;
 
-import java.lang.reflect.Array;
 import java.util.Iterator;
 
 public class MyArrayList<T> implements CustomList<T> {
@@ -46,16 +45,6 @@ public class MyArrayList<T> implements CustomList<T> {
     @Override
     public int size() {
         return size;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public T[] toArray(Class<T> clazz) {
-        T[] copy = (T[]) Array.newInstance(clazz, size);
-        for (int i = 0; i < size; i++) {
-            copy[i] = get(i);
-        }
-        return copy;
     }
 
     @Override
